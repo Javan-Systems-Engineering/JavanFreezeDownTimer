@@ -1,0 +1,158 @@
+﻿@using GridMvc.Html
+@model IEnumerable<FreezeDownTimer.Models.LocationDockQuery>
+
+@{
+    Layout = "~/Views/Shared/_layoutPage4.cshtml";
+    ViewBag.Title = "TimerReset";
+}
+
+@section scripts {
+    @*<script src="~/Scripts/bootstrap.min.js"></script>*@
+    <link href="@Url.Content("~/Content/Gridmvc.css")" rel="stylesheet" />
+    <link href="@Url.Content("~/Content/bootstrap.min.css")" rel="stylesheet" />
+    <link href="@Url.Content("~/Content/AdminTimer.css")" rel="stylesheet" />
+    <link href="~/Content/Menu.css" rel="stylesheet" type="text/css" />
+
+    <script src="@Url.Content("~/Scripts/gridmvc.min.js")"></script>
+    <script type="text/javascript">
+    $(document).ready(function () {
+
+        var lstTimer = @Html.Raw(Json.Encode(ViewBag.TimerList));
+
+        var x = setInterval(function () {
+        UpdateTimer();
+        }, 1000);
+
+        function _SetTimerDisplay(objTime, label)
+        {
+                var now = new Date().getTime();
+                // Find the distance between now and the count down date
+                var distance = (new Date(objTime.ReleaseDateTime).getTime()) - now;
+                //alert("Distance: " + distance)
+
+                // Time calculations for days, hours, minutes and seconds
+                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                var h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                if (h < 10) {
+                    h = '0'.concat(h);
+                }
+
+                var m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                if (m < 10) {
+                    m = '0'.concat(m);
+                }
+
+                var s = Math.floor((distance % (1000 * 60)) / 1000);
+                if (s < 10) {
+                    s =  '0'.concat(s);
+                }
+
+                // If the count down is over, write some text
+            if (distance < 0) {
+                    //clearInterval(x);
+                    objTime.TimeDisplayName = "EXPIRED";
+                    $('#' + label).text("EXPIRED");
+                    $('#' + label).css("color", "green");
+                }
+            else {
+                    // Output the result in an element with id="Display"
+                    $('#' + label).text(h + ":" + m + ":" + s);
+                    $('#' + label).css("color", "red")
+                }
+
+        }
+
+        // Set the date we're counting down to
+         function UpdateTimer() {
+            for (var i = 0; i < lstTimer.length; i++) {
+                var iCount = 0;
+                if (lstTimer[i].TimeDisplayName != 'EXPIRED') {
+                   //_SetTimerDisplay(lstTimer[i], "Display" + (i + 1));
+                   _SetTimerDisplay(lstTimer[i], lstTimer[i].TimeDisplayName);
+                   iCount++;
+                }
+            }
+            var vFound = lstTimer.find(function (element) {
+                return (element.TimeDisplayName != "EXPIRED" ? true : false);
+            });
+             if (vFound == undefined) {
+                clearInterval(x);
+            }
+        }
+
+    });
+
+    function ResetTimer(DockingID, LocationID) {
+
+
+         var url = "/Admin/Reset";
+
+        $.ajax({
+            //contentType: 'application/json; charset=utf-8',
+            //dataType: 'json',
+            type: 'POST',
+            url: url,
+            data: {DockingID: DockingID, LocationID: LocationID},
+             success: function (data) {
+                 //alert("Success");
+                 window.location.href = data;
+                 $('#result').html('"PassThings()" successfully called.');
+             },
+             //error: function (xhr, ajaxOptions, thrownError) {
+             //    alert(xhr.status);
+             //    alert(thrownError);
+             //    alert(xhr.responseJSON);
+             //},
+             error: function (request, status, error) {
+                 //alert(request.responseText);
+                 var msg = JSON.parse(request.responseText);
+                 $('#lblError').text(msg);
+
+             },
+             failure: function (response) {
+                 $('#result').html(response);
+                 alert(response.responseJSON);
+             }
+        });
+    }
+
+
+    </script>
+}
+<div class="container">
+    <br />
+    <br />
+    <br />
+    <div class="row">
+        <div class="col-md-12">
+            <h2>FreezeDown Timer Reset</h2>
+        </div>
+    </div>
+
+    @*<hr />*@
+    <div style="width:1100px;">
+        @Html.Grid(Model).Columns(columns =>
+    {
+        columns.Add(c => c.FullLocationCode).Titled("Location").Filterable(true).SetWidth(50);
+        //columns.Add(c => c.RemainingTime).Titled("Elapsed Time").Filterable(true).SetWidth(50);
+        columns.Add().Titled("Elapsed Time").Filterable(true).Encoded(false).Sanitized(false).Sortable(true).RenderValueAs(c => @<div style="width:100px;" id='Display_@(c.LocationCode)'>@c.RemainingTime</div>).SetWidth(30);
+columns.Add().Titled("Reset Timer").Encoded(false).Sanitized(false).RenderValueAs(c => @<div style="width:100px;"><img alt="Image" src='~/Content/Images/StopSignSmall.png' )" style="cursor:pointer" onclick="ResetTimer(@c.DockingID, @c.LocationID)" /></div>).SetWidth(30);
+}).WithPaging(10).Sortable(true)
+    </div>
+
+    <div>
+        <br />
+        @*<div class="row">
+                <div class="col-lg-1">
+                    <form method="get" action="\Equipment\AddNew">
+                        <input type="submit" value="Add New" class="btn btn-primary" />
+                    </form>
+                </div>
+                <div class="col-lg-9">
+                </div>
+                <div class="col-lg-2">
+                    @Html.ActionLink("Download Excel File", "Download", "Equipment")
+                </div>
+            </div>*@
+    </div>
+</div>

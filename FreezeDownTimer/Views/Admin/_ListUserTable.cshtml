@@ -1,0 +1,118 @@
+﻿@*@model IEnumerable<Models.User>*@
+@model PagedList.IPagedList<Models.User>
+@using PagedList.Mvc;
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Unbind the original image 'href' set by the controller...
+        $('.deleteUser').attr('href', 'javascript://');
+        $('.deleteUser').click(function () {
+            $dialog.data('id', $(this).attr('id')).data('Id', $(this).attr('Id')).dialog("open");
+        });
+
+        var $dialog = $('<div/>')
+            .html("Warning: This will delete the selected User from the System and will prevent future access to the System.<br/><br/>Do you wish to continue?")
+            .dialog({
+                autoOpen: false,
+                resizable: false,
+                height: 250,
+                modal: true,
+                title: 'Delete User',
+                buttons: [
+                    {
+                        text: "Continue",
+                        id: "continuebtn",
+                        click: function () {
+                            var _id = $(this).data('Id');
+                            var _parameters = { userId: _id };
+                            $.ajax({
+                                url: "/Admin/DeleteUserReturnPartialView",
+                                type: "GET",
+                                data: _parameters,
+                                success: function (data, textStatus, jqXHR) {
+                                    $('#UserTable').html(data);
+                                }
+                            });
+                            $(this).dialog('close');
+                        }
+                    },
+                    {
+                        text: "Cancel",
+                        id: "cancelbtn",
+                        click: function () {
+                            $(this).dialog("close");
+                        }
+                    }]
+            });
+    });
+</script>
+<div class="panel" id="divUsers">
+    <table id="UserTable" style="width:100%">
+        <thead>
+        <th>
+            @*UserName*@
+            @Html.ActionLink("UserName", "Index", new { sortOrder = ViewBag.UserNameSortParm, currentFilter=ViewBag.CurrentFilter }, new { @style = "color: white" })
+        </th>
+        <th>
+            @*Last Name*@
+            @Html.ActionLink("Last Name", "Index", new { sortOrder = ViewBag.LastNameSortParm, currentFilter=ViewBag.CurrentFilter  }, new { @style = "color: white" })
+        </th>
+        <th>
+            @*First Name*@
+            @Html.ActionLink("First Name", "Index", new { sortOrder = ViewBag.FirstNameSortParm, currentFilter=ViewBag.CurrentFilter  }, new { @style = "color: white" })
+
+        </th>
+        <th>
+            Password
+        </th>
+        @*<th>
+                Initial
+            </th>*@
+        <th></th>
+        </thead>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @if (item.FirstName != null && item.LastName != null)
+                    {
+                        @Html.ActionLink(item.UserName, "UserDetails", new { id = item.UserID })
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(modelItem => item.UserName)
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Password)
+                </td>
+                @*<td>
+                        @Html.DisplayFor(modelItem => item.Initial)
+                    </td>*@
+                <td>
+                    <center>
+                        <a href="@Url.Action("UserEdit", "Admin", new { id = item.UserID })" id=@item.UserID>
+                            <img src="@Url.Content("~/Content/images/pen.png")" style="float: none" />
+                        </a>
+                        <img class="deleteUser" src="@Url.Content("~/Content/images/bin.png")" style="float: none" />
+                    </center>
+                </td>
+            </tr>
+        }
+    </table>
+    <br />
+    Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+    @Html.PagedListPager(Model, page => Url.Action("Index",
+        new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+
+    @Html.Hidden("PageNumber", Model.PageNumber)
+    @Html.Hidden("CurrentSort", (object)ViewBag.CurrentSort)
+
+</div>

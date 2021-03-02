@@ -1,0 +1,42 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+@section scripts
+{
+<script type="text/javascript">
+    $(document).ready(function () {
+        alert("Doc Redy")
+    });
+
+</script>
+}
+
+<br />
+<br />
+
+<h3>
+    This is the Home Page for now ....
+</h3>
+<br />
+<br />
+
+<div>
+    @using (Html.BeginForm("Index", "Home", FormMethod.Get))
+    {
+        @Html.Label("Div: ");
+        @Html.TextBox("subDiv", "", new { style = "width:200px", maxlength = 30 })
+        <br />
+        <br />
+        @Html.Label("Time: ");
+        @Html.TextBox("subTimer", "", new { style = "width:200px", maxlength = 30 })
+        <br />
+        <br />
+
+        <input type="submit" value="Start Timing" id="sub1" name="sub1" />
+        <br />
+        <br />
+
+        @Html.ActionLink("New Timer Code", "Index", "Timer")
+
+    }
+</div>

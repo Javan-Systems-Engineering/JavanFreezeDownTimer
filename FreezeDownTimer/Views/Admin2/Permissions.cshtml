@@ -1,0 +1,194 @@
+﻿
+@{
+    ViewBag.Title = "Permissions";
+    Layout = "~/Views/Shared/_LayoutPage4.cshtml";
+
+}
+
+
+@section scripts
+{
+
+    <link href="~/startbootstrap/dist/css/styles.css" rel="stylesheet" />
+    <link href="~/Content/Menu.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/UserEdit.css" rel="stylesheet" type="text/css" />
+
+
+    <link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js" crossorigin="anonymous"></script>
+    <link href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.dataTables.min.css" rel="stylesheet" crossorigin="anonymous" />
+    @*<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>*@
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.2/js/dataTables.buttons.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.print.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.3/js/buttons.html5.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/colreorder/1.5.2/js/dataTables.colReorder.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
+
+
+
+    <script>
+        $(document).ready(function () {
+
+            $('#dataTable').on('click', '.deleteLink', function () {
+
+                var _permissionID = $(this).attr('id')
+                $('#ConfirmPermissionID').val(_permissionID)
+                $('#confirmDeleteModal').modal({ "backdrop": "static" })
+            });
+
+            $('#btnPermissionDeleteConfirm').click(function () {
+                //$('#confirmDeleteModal').hide
+                var _permissionID = $('#ConfirmPermissionID').val();
+                var _parameters = { PermissionID: _permissionID };
+                $.ajax({
+                    url: "/Admin2/PermissionDeleteDB",
+                    type: "POST",
+                    data: _parameters,
+                    success: function (data, textStatus, jqXHR) {
+                        window.location.href = data;
+                    }
+                });
+            })
+
+
+
+            var datatable = $('#dataTable').DataTable({
+                'pageLength': 20,
+                orderCellsTop: true,
+                //colReorder: { order: [0,1,2,3,4,5] },
+                dom: 'Bfrtip',
+                buttons: [
+                ],
+                "processing": true,
+                 "ajax": {
+                    dataSrc: "",
+                     url: '@Url.Action("GetPermissionList", "Admin2")',
+
+                    dataFilter: function (reps) {
+                        console.log(reps);
+                        return reps;
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+
+                 },
+                       "columns": [
+
+                           { "data": "PermissionName" },
+                           { "data": "PermissionDescription" },
+                           {
+                               "data": "PermissionID",
+                               render: function (data, type, row) {
+                                    var linkEdit = '@Html.ActionLink("Edit", "PermissionEdit", "Admin2", new { PermissionID = -1}, null)';
+                                   linkEdit = linkEdit.replace("-1", row.PermissionID );
+                                    return linkEdit;
+                               },
+                               orderable: false
+                           },
+                           {
+                               "data": "PermissionID",
+                               render: function (data, type, row) {
+                                    var linkDelete =  '@Html.Label("Delete", htmlAttributes: new { @class = "control-label col-lg-6 lb-sm deleteLink editDivFormat", @style = "color:blue;cursor:pointer", @id = -1 })'
+                                   linkDelete = linkDelete.replace("-1", row.PermissionID );
+                                    return linkDelete;
+                               },
+                               orderable: false
+                           }
+                ]
+
+
+
+            });
+
+
+
+
+        });
+
+
+    </script>
+
+}
+
+<div class="container body-content">
+    <br />
+
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-md-10">
+                    <i class="fas fa-table mr-1"></i>Permissions
+                </div>
+                <div class="col-md-2">
+                    <button type="button" name="cmdCreate" id="cmdCreate" class="myButton btn btn-sm form-control " onclick="location.href='@Url.Action("PermissionCreate","Admin2")'">Create Permission</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered fdDataTable display dataTable" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Permission Name</th>
+                            <th>Permission Description</th>
+                            <th>Action</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+
+                    </tbody>
+                </table>
+
+
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade " id="confirmDeleteModal">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header alert-warning">
+                    <h3 class="modal-title">Confirmation</h3>
+                </div>
+                <div id="confirmModalBody" class="modal-body">
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <label class="alert-warning" style="font-size: 20px">Warning: This will delete the selected Permission from the System.<br /><br />Do you wish to continue?</label>
+                        </div>
+
+                    </div>
+
+
+
+
+                    @Html.Hidden("ConfirmPermissionID")
+
+
+                </div>
+
+                <div class="modal-footer alert-warning">
+                    <a href="#" class="btn btn-default" data-dismiss="modal" id="btnPermissionDeleteConfirmCancel">Cancel</a>
+                    <input type="reset" value="Submit" class="btn btn-warning" id="btnPermissionDeleteConfirm" />
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+</div>

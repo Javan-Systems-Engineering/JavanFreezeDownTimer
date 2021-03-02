@@ -1,0 +1,89 @@
+﻿@model Models.Role
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Unbind the original image 'href' set by the controller...
+        $('.deletePermission').attr('href', 'javascript://');
+        $('.deletePermission').click(function () {
+            $dialog.data('id', $(this).attr('id')).data('permissionId', $(this).attr('permissionId')).dialog("open");
+        });
+
+        var $dialog = $('<div/>')
+		.html("Warning: This will remove the selected Permission from this Role.  Removing this permission may prevent Users from accessing areas in the application.  Only remove this permission if you intend to restrict application access on this role.<br/><br/>Do you wish to continue?")
+		.dialog({
+		    autoOpen: false,
+		    resizable: false,
+		    height: 250,
+		    modal: true,
+		    title: 'Remove Permission',
+		    buttons: [
+                        {
+                            text: "Continue",
+                            id: "continuebtn",
+                            click: function () {
+                                var _id = $(this).data('id');
+                                var _permissionId = $(this).data('permissionId');
+
+                                var _parameters = { id: _id, permissionId: _permissionId };
+                                $.ajax({
+                                    url: "/Admin/DeletePermissionFromRoleReturnPartialView",
+                                    type: "GET",
+                                    data: _parameters,
+                                    success: function (data, textStatus, jqXHR) {
+                                        $('#PermissionsTable').html(data);
+                                    }
+                                });
+                                $(this).dialog('close');
+                            }
+                        },
+                        {
+                            text: "Cancel",
+                            id: "cancelbtn",
+                            click: function () {
+                                $(this).dialog("close");
+                            }
+                        }]
+		});
+    });
+</script>
+@{if (Model.Permissions.Count == 0)
+{
+    <h2><font color="red">No Associated Permissions...</font></h2>
+    <br />
+}
+else
+{
+<table id="PermissionTable" style="width: 65%">
+    <thead>
+    <th style="width:45%">
+        Permission
+    </th>
+    <th style="width:45%">
+        Description
+    </th>
+    <th>
+        Action
+    </th>
+    </thead>
+    @foreach (Models.Permission permission in Model.Permissions.OrderBy(n => n.PermissionDescription))
+    {
+<tr>
+    <td>
+        @Html.ActionLink(permission.PermissionName, "PermissionDetails", new { id = permission.PermissionID })
+    </td>
+    <td>
+        @Html.DisplayFor(p => permission.PermissionDescription)
+    </td>
+    <td>
+        <center>
+            <a href="@Url.Action("DeletePermission", "Admin", new { id = Model.RoleID, permissionId = permission.PermissionID })" class="deletePermission" id=@Model.RoleID permissionid=@permission.PermissionID>
+                <img src="@Url.Content("~/Content/images/bin.png")" />
+            </a>
+        </center>
+    </td>
+</tr>
+    }
+</table>
+    <br />
+}
+}
+

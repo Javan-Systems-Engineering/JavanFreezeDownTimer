@@ -1,0 +1,54 @@
+﻿@model Models.User
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    ViewBag.Title = "User - " + Model.UserName;
+    if ((Model.UserName != null) && (Model.UserName != ""))
+    {
+        ViewBag.Title = ViewBag.Title + " (" + Model.UserName + ")";
+    }
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(":input[type='button']").button();
+        $(":input[type='submit']").button();
+    });
+</script>
+@using (Html.BeginForm("UserEdit", "Admin", FormMethod.Post))
+{
+    @Html.ValidationSummary(true)
+    <input name='UserID' id='UserID' type="hidden" value="@ViewBag.UserID" />
+    <fieldset>
+        <legend>
+            <h3>
+                User Details
+            </h3>
+        </legend>
+        @Html.Partial("_userDetailsEdit", Model)
+        <br />
+        <input type="submit" value="Save" />
+    </fieldset>
+
+    <fieldset>
+        <legend>
+            <h3>
+                Roles Associated with this User
+            </h3>
+        </legend>
+        <div class="panel" id="RolesTable">
+            @Html.Partial("_ListUserRoleTable", Model)
+        </div>
+        @Html.Partial("_ListEditableUserRoleTable")
+        <br />
+        <div>
+            @Html.ActionLink("Go to Roles", "RoleIndex", "Admin")
+        </div>
+    </fieldset>
+
+    @Html.HiddenFor(m => m.InsertDate)
+
+}
+<br />
+<div>
+    @Html.ActionLink("Go to Users", "Index", "Admin")
+</div>

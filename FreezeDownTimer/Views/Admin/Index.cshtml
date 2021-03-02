@@ -1,0 +1,104 @@
+﻿@*@model IEnumerable<Models.User>*@
+@model PagedList.IPagedList<Models.User>
+@*@using PagedList.Mvc;*@
+@{
+    ViewBag.Title = "FreezeDown Timer Administration";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+@section scripts
+{
+    <link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+    <script>
+        $(function () {
+            $("#pbFilter").click(function () {
+                var p = $("#PageNumber").val();
+                var s = $("#SortOrder").val();
+                alert(s);
+                $.get("/Admin/filter4Users", { _surname: $("#SurnameId").val() }, function (data) {
+                    $("#divUsers").html(data);
+                })
+            })
+        });
+
+        $(function () {
+            $("#pbReset").click(function () {
+                $("#SurnameId").val('');
+                $.get("/Admin/filterReset", {}, function (data) {
+                    $("#divUsers").html(data);
+                })
+            })
+        });
+
+        //$(function () {
+        //    $("#subReset").click(function () {
+        //        $("#SurnameId").val('');
+        //        alert($("#SurnameId").val());
+                //$.get("/Admin/filterReset", {}, function (data) {
+                //    $("#divUsers").html(data);
+                //})
+        //    })
+        //});
+
+        $(document).ready(function () {
+            $(":input[type='button']").button();
+            $(":input[type='submit']").button();
+        });
+    </script>
+}
+@*<div class="row">
+    <div class="col-lg-12">*@
+        <fieldset>
+            <legend class="user-border">
+                <h3>
+                    System Users
+                </h3>
+            </legend>
+            <fieldset style="font: 100%; border: Black; border-style: solid; border-width: thin; width: 30%">
+                <legend class="user-border"><strong>Search Filter</strong></legend>
+                <br />
+                <div>
+                    @using (Html.BeginForm("Index", "Admin", FormMethod.Get))
+                    {
+                        <table class="AdminTbl">
+                            <tr>
+                                <td>
+                                    <h3>
+                                        Last Name:
+                                    </h3>
+                                </td>
+                                <td>
+                                    @*@Html.TextBox("SurnameId", string.Empty, new { style = "width:200px", maxlength = 30 })*@
+                                    @Html.TextBox("SearchString", ViewBag.CurrentFilter as string, new { style = "width:200px", maxlength = 30 })
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    @*<input type="button" value="Apply Filter" id="pbFilter" name="pbFilter" />*@
+                                    <input type="submit" value="Apply Filter" id="subFilter" name="subFilter" />
+                                    @*<input type="button" value="Reset" id="pbReset" />*@
+                                    <input type="submit" value="Reset" id="subReset" name="subReset" />
+
+                                </td>
+                            </tr>
+                        </table>
+                    }
+                </div>
+            </fieldset>
+            <br />
+            <br />
+            @Html.Partial("_ListUserTable", Model)
+            @*Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+                @Html.PagedListPager(Model, page => Url.Action("Index",
+                    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))*@
+            <br />
+            <div>
+                <input type="button" value="Create User" onclick="location.href='@Url.Action("UserCreate", "Admin")'" />
+                <br />
+            </div>
+        </fieldset>
+    @*</div>
+</div>*@
+

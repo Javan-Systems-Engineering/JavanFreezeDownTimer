@@ -1,0 +1,194 @@
+﻿
+@{
+    ViewBag.Title = "TestMenu1";
+    Layout = "~/Views/Shared/_LayoutPage4.cshtml";
+
+}
+
+
+@section scripts
+{
+    <link href="~/startbootstrap/dist/css/styles.css" rel="stylesheet" />
+
+    <link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js" crossorigin="anonymous"></script>
+    <link href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.dataTables.min.css" rel="stylesheet" crossorigin="anonymous" />
+
+    @*<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>*@
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.2/js/dataTables.buttons.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.print.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.3/js/buttons.html5.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/colreorder/1.5.2/js/dataTables.colReorder.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
+
+
+    <link href="~/Content/Menu.css" rel="stylesheet" type="text/css" />
+
+    <script>
+        $(document).ready(function () {
+
+            //sortDatePlugin();
+
+            //$.fn.dataTable.moment('M/D/YYYY HH:m:s');
+
+            var datatable = $('#dataTable').DataTable({
+                'pageLength': 20,
+                orderCellsTop: true,
+                //colReorder: { order: [0,1,2,3,4,5] },
+                dom: 'Bfrtip',
+                buttons: [
+                ],
+                "processing": true,
+                 "ajax": {
+                    dataSrc: "",
+                     url: '@Url.Action("GetUserList", "Admin2")',
+                     //data: function (d) {
+                     //    d.StartDate = StartDate;
+                     //    d.EndDate = EndDate;
+                     //},
+                    dataFilter: function (reps) {
+                        console.log(reps);
+                        return reps;
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+
+                 },
+                       "columns": [
+
+                           { "data": "UserName" },
+                           { "data": "LastName" },
+                           { "data": "FirstName" },
+                           { "data": "Password" },
+                           {
+                               data: null,
+                               defaultContent: '<img src="@Url.Content("~/Content/images/pen.png")" style="float: none; cursor:pointer" onclick="EditUser()"  />',
+                               orderable: false
+                           },
+                           {
+                               data: null,
+                               defaultContent: '<img src="@Url.Content("~/Content/images/bin.png")" style="float: none" />',
+                               orderable: false
+                           }
+                ],
+
+
+                initComplete: function () {
+                    this.api().columns([0]).every(function () {
+                        var column = this;
+                        var select = $('<select><option value=""></option></select>')
+                            .appendTo($('thead tr:eq(1) td').eq(this.index()))
+                            .on('change', function () {
+                                var val = $.fn.dataTable.util.escapeRegex(
+                                    $(this).val()
+                                );
+                                column
+                                    .search(val ? '^' + val + '$' : '', true, false)
+                                    .draw();
+                            });
+                        column.data().unique().sort().each(function (d, j) {
+                            select.append('<option value="' + d + '">' + d + '</option>');
+                        });
+                    });
+                    this.api().columns([1]).every(function () {
+                        var column = this;
+                        var title = $(column.header()).text();
+                        var input = $('<input type="text" placeholder="Search ' + title + '" />')
+                            .appendTo($('thead tr:eq(1) td').eq(this.index()))
+                            .on('keyup change', function () {
+                                if (column.search() !== this.value) {
+                                    column
+                                        .search(this.value)
+                                        .draw();
+                                }
+                            });
+                    });
+
+
+                }
+
+            });
+
+
+
+
+
+        });
+
+        function sortDatePlugin() {
+            $.fn.dataTable.moment = function (format, locale) {
+                var types = $.fn.dataTable.ext.type;
+                // Add type detection
+                types.detect.unshift(function (d) {
+                    return moment(d, format, locale, true).isValid() ? 'moment-' + format : null;
+                });
+                // Add sorting method - use an integer for the sorting
+                types.order['moment-' + format + '-pre'] = function (d) {
+                    return moment(d, format, locale, true).unix();
+                };
+            };
+        }
+
+        function EditUser() {
+            alert("Boo ya");
+        }
+
+    </script>
+
+}
+
+<div class="container-fluid">
+    <br />
+    <br />
+    <br />
+    <br />
+
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table mr-1"></i>QA/QC Data
+        </div>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered fdDataTable display dataTable" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>UserName</th>
+                            <th>LastName</th>
+                            <th>FirstName</th>
+                            <th>Password</th>
+                            <th>Edit</th>
+                            <th>Delete</th>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+
+                    </tbody>
+                </table>
+
+
+            </div>
+        </div>
+    </div>
+</div>

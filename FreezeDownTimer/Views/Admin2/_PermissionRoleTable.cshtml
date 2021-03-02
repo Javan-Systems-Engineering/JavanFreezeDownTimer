@@ -1,0 +1,80 @@
+﻿@model FreezeDownTimer.Models.PermissionViewModel
+
+<script type="text/javascript">
+    $(document).ready(function () {
+            var _IsSaved = '@ViewBag.IsSaved';
+            if (_IsSaved == "True") {
+                $('#lblSave').text("Changes Saved");
+                $(document).on('change', '.changeable', function () {
+                    $('#lblSave').text("");
+                });
+
+            }
+            else {
+                $('#lblSave').text("");
+        }
+        $(".deleteLink").click(function () {
+            //alert("Delete")
+            var _roleID = $(this).attr('id')
+
+            $('#ConfirmRoleID').val(_roleID)
+            $('#confirmDeleteModal').modal({ "backdrop": "static" })
+        });
+    });
+</script>
+
+
+@{if (Model.assignedRoles.Count == 0)
+    {
+        <h4><font color="red">No Associated Roles...</font></h4>
+        <br />
+    }
+    else
+    {
+        foreach (var r in Model.assignedRoles)
+        {
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="form-group mb-1 " style="color:darkmagenta">
+                        @Html.Label(r.RoleName, htmlAttributes: new { @class = "control-label col-lg-6 lb-md" })
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    @Html.Label("Delete", htmlAttributes: new { @class = "control-label col-lg-6 lb-sm deleteLink", @style = "color:blue;cursor:pointer", @id = @r.RoleID })
+                </div>
+            </div>
+
+            @*</div>*@
+        }
+    }
+}
+<div class="modal fade " id="confirmDeleteModal">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header alert-warning">
+                <h4 class="modal-title">Delete Confirmation</h4>
+            </div>
+            <div id="confirmModalBody" class="modal-body">
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <label class="alert-warning" style="font-size: 16px">Do you wish to delete this Role?</label>
+                    </div>
+
+                </div>
+
+                @Html.Hidden("ConfirmRoleID")
+
+
+            </div>
+
+            <div class="modal-footer alert-warning">
+                <a href="#" class="btn btn-default" data-dismiss="modal" id="btnDeletePermissionRoleConfirmCancel">Cancel</a>
+                <input type="reset" value="Delete" class="btn btn-warning" id="btnDeletePermissionRoleConfirm" />
+            </div>
+        </div>
+
+    </div>
+</div>
+

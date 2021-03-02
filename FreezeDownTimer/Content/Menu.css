@@ -1,0 +1,31 @@
+﻿.navbar-xs {
+    min-height: 40px;
+    height: 40px;
+    background-color: darkblue !important
+}
+
+    .navbar-xs .navbar-brand {
+        padding: 0px 12px;
+        font-size: 20px;
+        line-height: 40px;
+    }
+
+    .navbar-xs .navbar-nav > li > a {
+        padding-top: 0px;
+        padding-bottom: 0px;
+        line-height: 40px;
+        /*        color:aliceblue !important;
+*/ margin-right: 30px;
+        font-size: 14px
+    }
+
+.nav-item > a:hover {
+    background-color: silver;
+    color: black !important;
+}
+
+.nav-item > a {
+    /*    background-color: silver;
+*/ color: aliceblue !important;
+}
+

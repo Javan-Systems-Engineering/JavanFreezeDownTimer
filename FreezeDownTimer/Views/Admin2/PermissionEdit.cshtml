@@ -1,0 +1,210 @@
+﻿@using Models;
+@using FreezeDownTimer.Helpers;
+@model FreezeDownTimer.Models.PermissionViewModel
+
+@{
+    ViewBag.Title = "PermissionEdit";
+    Layout = "~/Views/Shared/_LayoutPage4.cshtml";
+}
+@section scripts
+{
+    <link href="~/Content/Menu.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/UserEdit.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var _IsSaved = '@ViewBag.IsSaved';
+            if (_IsSaved == "True") {
+                $('#lblSave').text("Changes Saved");
+                $(document).on('change', '.changeable', function () {
+                    //$('#FormChanged').val("1");
+                    $('#lblSave').text("");
+                });
+                //$("#Notes").on("keypress", function () {
+                //    $('#lblSave').text("");
+                //})
+
+            }
+            else {
+                $('#lblSave').text("");
+            }
+
+            $('#cmdAddRole').click(function () {
+                var _permissionID = $('#PermissionID').val();
+                var _roleID = $('#RoleID').val();
+                
+
+                if (_roleID == '') {
+                    return false;
+                }
+
+                var _parameters = { PermissionID: _permissionID,  RoleID: _roleID  };
+                $.ajax({
+                    url: "/Admin2/AddPermissionRoleReturnPartialView",
+                    type: "GET",
+                    data: _parameters,
+                    success: function (data, textStatus, jqXHR) {
+                        $('#RolesTable').html(data);
+                    }
+                });
+            });
+            $('#btnDeletePermissionRoleConfirm').click(function () {
+                $('#confirmDeleteModal').modal('hide')
+                var _permissionID = $('#PermissionID').val();
+                var _roleID = $('#ConfirmRoleID').val();
+
+
+                if (_roleID == '') {
+                    return false;
+                }
+                alert("Roleid " + _roleID + " Permisisonid " + _permissionID)
+                var _parameters = { PermissionID: _permissionID, RoleID: _roleID };
+                $.ajax({
+                    url: "/Admin2/DeletePermissionRoleReturnPartialView",
+                    type: "GET",
+                    data: _parameters,
+                    success: function (data, textStatus, jqXHR) {
+                        $('#RolesTable').html(data);
+                    }
+                });
+            });
+        })
+    </script>
+
+}
+@using (Html.BeginForm("PermissionEditDB", "Admin2", FormMethod.Post, new { encType = "multipart/form-data" }))
+{
+    <div class="container">
+
+        <div class="row">
+            <div class="col-md-2 mb-2 mt-4">
+                <h5>Edit Permission</h5>
+            </div>
+            <div class="col-md-8 mb-2 mt-4">
+            </div>
+            <div class="col-md-2 mb-2">
+                <label id="lblSave" class="mt-3 fdLabel" style="color:red; font-size: 18px"></label>
+            </div>
+        </div>
+
+
+
+        @* Role Infromation*@
+        <div class="card mb-3">
+
+            <h5 class="card-header" style="background-color: lightblue">Permission Details</h5>
+
+            <div class="card-body">
+
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="form-group mb-2 editDivFormat">
+                            @Html.Label("Permission Name:", htmlAttributes: new { @class = "control-label col-lg-6 lb-sm" })
+                            @Html.TextBoxFor(model => model.PermissionName, htmlAttributes: new { @class = "form-control changeable  form-control-sm" })
+                            @Html.ValidationMessageFor(model => model.PermissionName, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-group mb-2 editDivFormat">
+                            @Html.Label("Permission Description:", htmlAttributes: new { @class = "control-label col-lg-12 lb-sm" })
+                            @Html.EditorFor(model => model.PermissionDescription, new { htmlAttributes = new { @class = "form-control changeable", @rows = "3", @height = "100%", @maxlength = "255" } })
+                            @Html.ValidationMessageFor(model => model.PermissionDescription, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+
+                </div>
+
+
+
+
+
+                <div class="row">
+                    <div class="col-lg-2 mt-2">
+                        <button type="submit" name="cmdSave" value="Save" class="btn btn-primary btn-sm form-control">Save</button>
+                    </div>
+                    <div class="col-lg-10 mt-2">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-2 mt-3">
+                        @Html.ActionLink("Go To Permissions", "Permissions", "Admin2")
+                    </div>
+                    <div class="col-lg-9 mt-3">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+
+
+
+        @*Role Permission Information*@
+
+        <div class="card mb-3">
+
+            <h5 class="card-header" style="background-color: lightgreen">Roles Associated with this Permission </h5>
+
+            <div class="card-body">
+
+                <div class="row">
+                    <div class="col-lg-6">
+                        @Html.Label("Role:", htmlAttributes: new { @class = "control-label col-lg-6 lb-sm" })
+                    </div>
+                    <div class="col-lg-6">
+                        @Html.Label("Action:", htmlAttributes: new { @class = "control-label col-lg-6 lb-sm" })
+                    </div>
+                </div>
+
+                <div id="RolesTable">
+                    @Html.Partial("_PermissionRoleTable", Model)
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-3 mt-4">
+                        <div class="form-group editDivFormat">
+                            @Html.Label("Add Role to Permission:", htmlAttributes: new { @class = "control-label col-lg-6 lb-sm" })
+                            @Html.DropDownList("RoleID", Model.selectRoles,
+                            "Select", new { @class = "selectpicker form-control form-control-sm changeable", })
+                        </div>
+                    </div>
+                    <div class="col-lg-2 mt-4">
+                        <button type="button" name="cmdAddRole" id="cmdAddRole" value="Save" class="btn btn-primary btn-sm form-control mt-4">Add Role</button>
+                    </div>
+                    <div class="col-lg-7 mt-4">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-2 ">
+                        @Html.ActionLink("Go To Roles", "Roles", "Admin2")
+                    </div>
+                    <div class="col-lg-2">
+                    </div>
+                    <div class="col-lg-7">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+
+
+
+    </div>
+
+    @Html.HiddenFor(m => m.PermissionID)
+}

@@ -1,0 +1,177 @@
+﻿
+@{
+    ViewBag.Title = "Timer";
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+
+   $('.square').on("click", function () {
+       countDown()
+    });
+});
+    function countDown() {
+        var queryString = window.location.search;
+        var urlParams = new URLSearchParams(queryString);
+        var matchdiv = urlParams.get('counterdiv');
+        var matchtimer = urlParams.get('timer');
+
+        var defaultDiv = "countera";
+        //var matchdiv = document.location.href.match(/[\?|&]counterdiv=(\d+)/i);
+        //var matchtimer = document.location.href.match(/[\?|&]timer=(\d+)/i);
+
+        //alert(matchtimer);
+        //alert(matchdiv);
+        if (matchdiv == null) {
+            return;
+
+        }
+        var targetDiv = matchdiv ? matchdiv : defaultDiv;
+
+        var defaultTimer = 65, // Default amount of seconds if url variable is not found
+            callback = function () {
+                // Will be executed when the timer finishes
+                //alert("Time is up!");
+                $('#' + targetDiv).parent().css("background-color", "green");
+            };
+
+        var counter = 1, timer,
+            //match = document.location.href.match(/[\?|&]timer=(\d+)/i),
+            //totalTime = match ? match[1] : defaultTimer;
+            totalTime = matchtimer ? matchtimer : defaultTimer;
+
+
+
+        var s;
+        timer = setInterval(function () {
+            if (totalTime != -1 && !isNaN(totalTime)) {
+                $('#' + targetDiv).parent().css("background-color", "red");
+                val =
+                    (function () {
+                        var h = Math.floor(totalTime / 3600);
+                        if (h < 10) {
+                            return '0'.concat(h);
+                        }
+                        else {
+                            return h;
+                        }
+                    })()
+                    + ':' + (function () {
+                        var m = Math.floor(totalTime / 60);
+                        if (m < 10) {
+                            return '0'.concat(m);
+                        }
+                        else {
+                            return m;
+                        }
+                    })()
+                    + ':' + (function () {
+                        s = totalTime % 60;
+                        if (s < 10) {
+                            return '0'.concat(s);
+                        }
+                        else {
+                            return s;
+                        }
+                    })();
+
+                $('#' + targetDiv).html(val);
+                totalTime--;
+            }
+            else {
+                window.clearInterval(timer);
+                timer = null;
+                callback();
+            }
+        }, 1000);
+
+    }
+</script>
+<br />
+<br />
+<br />
+
+@*<h2>
+        @Html.Label("lblTime", "Elapsed Time: " + ViewBag.ElapsedTime as string, new { @style = "color:red" })
+    </h2>*@
+<div class="container">
+
+    <div class="row">
+        <div class="col-lg-1">
+            <div id="squarea" class="square">
+                <div id="countera"></div>
+                <div class="squareRelative">A</div>
+            </div>
+        </div>
+        <div class="col-lg-1">
+            <div id="squareb" class="square">
+                <div id="counterb"></div>
+                <div class="squareRelative">B</div>
+            </div>
+        </div>
+        <div class="col-lg-1">
+            <div id="squarec" class="square">
+                <div id="counterc"></div>
+                <div class="squareRelative">C</div>
+            </div>
+        </div>
+        <div class="col-lg-1">
+            <div id="squared" class="square">
+                <div id="counterd"></div>
+                <div class="squareRelative">D</div>
+            </div>
+        </div>
+        <div class="col-lg-1">
+            <div id="squaree" class="square">
+                <div id="countere"></div>
+                <div class="squareRelative">E</div>
+            </div>
+        </div>
+        <div class="col-lg-1">
+            <div id="squaref" class="square">
+                <div id="counterf"></div>
+                <div class="squareRelative">F</div>
+            </div>
+        </div>
+        <div class="col-lg-1">
+            <div id="squareg" class="square">
+                <div id="counterg"></div>
+                <div class="squareRelative">G</div>
+            </div>
+        </div>
+        <div class="col-lg-1">
+            <div id="squareh" class="square">
+                <div id="counterh"></div>
+                <div class="squareRelative">H</div>
+            </div>
+        </div>
+        <div class="col-lg-1">
+            <div id="squarei" class="square">
+                <div id="counteri"></div>
+                <div class="squareRelative">I</div>
+            </div>
+        </div>
+        <div class="col-lg-1">
+            <div id="squarej" class="square">
+                <div id="counterj"></div>
+                <div class="squareRelative">J</div>
+            </div>
+        </div>
+        <div class="col-lg-1">
+            <div id="squarek" class="square">
+                <div id="counterk"></div>
+                <div class="squareRelative">K</div>
+            </div>
+        </div>
+        <div class="col-lg-1">
+
+        </div>
+    </div>
+    <br />
+    <br />
+    @Html.ActionLink("Back to Index", "Index", "Home")
+    <br />
+    <br />
+    @Html.ActionLink("New Timer Code", "Index", "Timer")
+
+</div>
+

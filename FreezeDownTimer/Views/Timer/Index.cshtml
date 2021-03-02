@@ -1,0 +1,1044 @@
+﻿@*@model Models.TimerModel*@
+@using FreezeDownTimer.Filters
+
+@model Models.FreezeDownViewModel
+
+@{
+    ViewBag.Title = "Index";
+}
+
+@section scripts
+{
+
+
+    <link href="@Url.Content("~/Content/CustomBootstrap/bootstrap.min.css")" rel="stylesheet" />
+    @*<link href="@Url.Content("~/Content/CustomBootstrap16/bootstrap.min.css")" rel="stylesheet" />*@
+    <link href="~/Content/MainScreen.css" rel="stylesheet" type="text/css" />
+    <script src="~/Scripts/CustomBootstrap/bootstrap.min.js"></script>
+    @*<script src="~/Scripts/CustomBootstrap16/bootstrap.min.js"></script>*@
+    <script src="~/Scripts/MainScreen.js"></script>
+    <script src="~/Scripts/onscan.min.js"></script>
+
+
+
+    @{
+
+        Controller ctl = (Controller)ViewBag.Controller;
+        if (ctl.HasRole("OperatorViewOnly"))
+        {
+            <script type="text/javascript">
+    $(document).ready(function () {
+
+
+    var lstTimer = @Html.Raw(Json.Encode(ViewBag.TimerList));
+
+    var x = setInterval(function () {
+    UpdateTimer();
+    }, 1000);
+
+    function _SetTimerDisplay(objTime, label, cartlabel, cart )
+    {
+            var now = new Date().getTime();
+            // Find the distance between now and the count down date
+            var distance = (new Date(objTime.ReleaseDateTime).getTime()) - now;
+
+            // Time calculations for days, hours, minutes and seconds
+            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            var h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            if (h < 10) {
+                h = '0'.concat(h);
+            }
+
+            var m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            if (m < 10) {
+                m = '0'.concat(m);
+            }
+
+            var s = Math.floor((distance % (1000 * 60)) / 1000);
+            if (s < 10) {
+                s =  '0'.concat(s);
+            }
+
+            // If the count down is over, write some text
+        if (distance < 0) {
+                $('#' + label).parent().css("cursor", "pointer");
+                $('#' + label).parent().css("pointer-events", "auto");
+                $('#' + label).parent().css("background-color", "green");
+                objTime.TimeDisplayName = "COMPLETE";
+                $('#' + label).text("COMPLETE");
+                $('#' + cartlabel).text(cart);
+            }
+        else {
+                $('#' + label).parent().css("cursor", "auto");
+                $('#' + label).parent().css("pointer-events", "none");
+                $('#' + label).parent().css("background-color", "red");
+                // Output the result in an element with id="Display"
+                $('#' + label).text(h + ":" + m + ":" + s);
+                $('#' + cartlabel).text(cart);
+
+            }
+
+    }
+
+    // Set the date we're counting down to
+     function UpdateTimer() {
+        for (var i = 0; i < lstTimer.length; i++) {
+            var iCount = 0;
+            if (lstTimer[i].TimeDisplayName != 'COMPLETE') {
+               _SetTimerDisplay(lstTimer[i], lstTimer[i].TimeDisplayName, lstTimer[i].CartDisplayName, lstTimer[i].CartLineNumber);
+               iCount++;
+            }
+        }
+        var vFound = lstTimer.find(function (element) {
+            return (element.TimeDisplayName != "COMPLETE" ? true : false);
+        });
+         if (vFound == undefined) {
+            clearInterval(x);
+        }
+     }
+
+
+   $("#dialog").dialog({ autoOpen: false });
+
+    document.body.appendChild(createLine(180, 231, 1492, 231))
+
+    document.body.appendChild(createLine(1492, 230, 1492, 818))
+
+    document.body.appendChild(createLine(1492, 818, 476, 818))
+
+    document.body.appendChild(createLine(476, 720, 476, 868))
+
+    document.body.appendChild(createLine(180, 231, 180, 818))
+
+    document.body.appendChild(createLine(180, 818, 250, 818))
+
+    document.body.appendChild(createLine(250, 818, 250, 868))
+
+
+
+
+     });
+
+            </script>
+        }
+
+        else
+        {
+
+            <script type="text/javascript">
+    $(document).ready(function () {
+
+        $(document).keypress(function (e) {
+            if ($("#editModal").hasClass('in') && (e.keycode == 13 || e.which == 13)) {
+                var hdn = $("#btnSubmitStart").is(":visible");
+                if (hdn == false) {
+                    $("#btnSubmitEnd").focus().click();
+                }
+                else {
+                    $("#btnSubmitStart").focus().click();
+                }
+            }
+
+            if ($("#confirmModal").hasClass('in') && (e.keycode == 13 || e.which == 13)) {
+                $("#btnConfirm").focus().click();
+
+            }
+
+
+        });
+
+    var lstTimer = @Html.Raw(Json.Encode(ViewBag.TimerList));
+
+    var x = setInterval(function () {
+    UpdateTimer();
+    }, 1000);
+
+    function _SetTimerDisplay(objTime, label, cartlabel, cart )
+    {
+            var now = new Date().getTime();
+            // Find the distance between now and the count down date
+            var distance = (new Date(objTime.ReleaseDateTime).getTime()) - now;
+
+            // Time calculations for days, hours, minutes and seconds
+            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            var h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            if (h < 10) {
+                h = '0'.concat(h);
+            }
+
+            var m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            if (m < 10) {
+                m = '0'.concat(m);
+            }
+
+            var s = Math.floor((distance % (1000 * 60)) / 1000);
+            if (s < 10) {
+                s =  '0'.concat(s);
+            }
+
+            // If the count down is over, write some text
+        if (distance < 0) {
+                $('#' + label).parent().css("cursor", "pointer");
+                $('#' + label).parent().css("pointer-events", "auto");
+                $('#' + label).parent().css("background-color", "green");
+                objTime.TimeDisplayName = "COMPLETE";
+                $('#' + label).text("COMPLETE");
+                $('#' + cartlabel).text(cart);
+            }
+        else {
+                $('#' + label).parent().css("cursor", "auto");
+                $('#' + label).parent().css("pointer-events", "none");
+                $('#' + label).parent().css("background-color", "red");
+                // Output the result in an element with id="Display"
+                $('#' + label).text(h + ":" + m + ":" + s);
+                $('#' + cartlabel).text(cart);
+
+            }
+
+    }
+
+    // Set the date we're counting down to
+     function UpdateTimer() {
+        for (var i = 0; i < lstTimer.length; i++) {
+            var iCount = 0;
+            if (lstTimer[i].TimeDisplayName != 'COMPLETE') {
+               _SetTimerDisplay(lstTimer[i], lstTimer[i].TimeDisplayName, lstTimer[i].CartDisplayName, lstTimer[i].CartLineNumber);
+               iCount++;
+            }
+        }
+        var vFound = lstTimer.find(function (element) {
+            return (element.TimeDisplayName != "COMPLETE" ? true : false);
+        });
+         if (vFound == undefined) {
+            clearInterval(x);
+        }
+     }
+
+   $('.square').on("click", function () {
+       var id = $(this).attr('id');
+       var color = $(this).css("background-color");
+       var hexColor = rgbToHex(color);
+       var location = id.split("_")
+       location = location[1]
+       $("#LocationCode").val(location)
+       if (hexColor == "#eaf1f8") {
+           $("#btnSubmitStart").show()
+           $("#btnSubmitEnd").hide()
+           $("#divCartLine").show()
+           $("#divCartNumber").show()
+           $("#editModalHeader").text("Insert Cart")
+       }
+       else
+       {
+           $("#btnSubmitStart").hide()
+           $("#btnSubmitEnd").show()
+           $("#divCartLine").hide()
+           $("#divCartNumber").hide()
+           cartDisplay = $(this).find('[id*="Display_Cart"]')
+           var cartText = cartDisplay.text()
+           var cartLine = cartText.split(" ")[0]
+           var cartNumber =  cartText.split(" ")[2]
+           cartNumber = cartNumber.replace(/\D/g, "");
+           cartNumber = parseInt(cartNumber)
+           $("#LineNumberEnd").val(cartLine)
+           $("#CartNumberEnd").val(cartNumber)
+           $("#editModalHeader").text("Remove Cart")
+       }
+       //$("#editModal").modal("show");
+        $("#editModal").modal({ "backdrop": "static" });
+    });
+
+    var hexDigits = new Array
+            ("0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f");
+
+    //Function to convert rgb color to hex format
+    function rgbToHex(rgb) {
+     rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+     return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+    }
+
+    function hex(x) {
+      return isNaN(x) ? "00" : hexDigits[(x - x % 16) / 16] + hexDigits[x % 16];
+    }
+
+        $("#btnSubmitStart").on("click", function () {
+
+            var UserName = $("#UserName").val()
+            var Password = $("#Password").val()
+            var CartLine =  $("#LineNumberStart").val()
+            var CartNumber = $("#CartNumberStart").val()
+            var LocationCode  = $("#LocationCode").val()
+
+            $("#ConfirmUserName").val(UserName)
+            $("#ConfirmPassword").val(Password)
+            $("#ConfirmLocationCode").val(LocationCode)
+            $("#ConfirmLineNumber").val(CartLine)
+            $("#ConfirmCartNumber").val(CartNumber)
+
+            $("#lblLocation").text("Location " + LocationCode)
+            $("#lblCartLine").text("Package Line " + CartLine)
+            $("#lblCartNumber").text("Cart Number " + CartNumber)
+
+
+            $('#editModal').modal('hide')
+            $('#confirmModal').modal({ "backdrop": "static" })
+
+     })
+
+     $("#btnSubmitEnd").on("click", function () {
+
+         var formData = $("#fdModFrm").serialize();
+         var url = "/Timer/EndFreeze";
+
+         $.ajax({
+             //contentType: 'application/json; charset=utf-8',
+             //dataType: 'json',
+             type: 'POST',
+             url: url,
+             data: formData,
+             success: function (data) {
+                 window.location.href = data;
+                 $('#result').html('"PassThings()" successfully called.');
+             },
+             error: function (request, status, error) {
+                 var msg = JSON.parse(request.responseText);
+                 $('#lblError').text(msg);
+
+             },
+             failure: function (response) {
+                 $('#result').html(response);
+                 alert(response.responseJSON);
+             }
+         });
+
+     });
+
+     $("#btnCancel").on("click", function () {
+         $("#UserName").val("");
+         $("#Password").val("");
+         $("#LineNumberStart").val("");
+         $("#CartNumberStart").val("");
+         $("#lblError").text("");
+     });
+
+     $("#btnConfirm").on("click", function () {
+
+         $('#confirmModal').modal('hide')
+
+         var UserName = $("#ConfirmUserName").val()
+         var Password = $("#ConfirmPassword").val()
+         var CartLine = $("#ConfirmLineNumber").val()
+         var CartNumber = $("#ConfirmCartNumber").val()
+         var LocationCode = $("#ConfirmLocationCode").val()
+         var url = "/Timer/StartFreeze1";
+
+         $.ajax({
+             //contentType: 'application/json; charset=utf-8',
+             //dataType: 'json',
+             type: 'POST',
+             url: url,
+             data: { UserName: UserName, Password: Password, CartLine: CartLine, CartNumber: CartNumber, LocationCode: LocationCode},
+                success: function (data) {
+                     window.location.href = data;
+                    $('#result').html('"PassThings()" successfully called.');
+                },
+
+             error: function (request, status, error) {
+                    $("#UserName").val(UserName);
+                    $("#Password").val(Password);
+                    $("#LineNumberStart").val(CartLine);
+                    $("#CartNumberStart").val(CartNumber);
+                    var msg = JSON.parse(request.responseText);
+                    $('#lblError').text(msg);
+                    $("#editModal").modal({ "backdrop": "static" });
+
+                },
+                failure: function (response) {
+                    $('#result').html(response);
+                    alert(response.responseJSON);
+                }
+            });
+
+
+
+
+     })
+
+        $("#btnConfirmCancel").on("click", function () {
+
+           var UserName = $("#ConfirmUserName").val()
+           var Password = $("#ConfirmPassword").val()
+           var CartLine = $("#ConfirmLineNumber").val()
+            var CartNumber = $("#ConfirmCartNumber").val()
+            var LocationCode = $("#ConfirmLocationCode").val()
+
+            $("#UserName").val(UserName)
+            $("#Password").val(Password)
+            $("#LineNumberStart").val(CartLine)
+            $("#CartNumberStart").val(CartNumber)
+            $("#LocationCode").val(LocationCode)
+
+
+            $('#confirmModal').modal('hide')
+            //$('#editModal').modal('show')
+            $("#editModal").modal({ "backdrop": "static" });
+
+        })
+
+        $('#editModal').on('shown.bs.modal', function (e) {
+            $("#editModalBody").removeClass('modal-open');
+            $("#pgBody").css({ "padding-right": "" });
+
+        });
+
+
+
+   $("#dialog").dialog({ autoOpen: false });
+
+    document.body.appendChild(createLine(180, 231, 1492, 231))
+
+    document.body.appendChild(createLine(1492, 230, 1492, 818))
+
+    document.body.appendChild(createLine(1492, 818, 476, 818))
+
+    document.body.appendChild(createLine(476, 720, 476, 868))
+
+    document.body.appendChild(createLine(180, 231, 180, 818))
+
+    document.body.appendChild(createLine(180, 818, 250, 818))
+
+    document.body.appendChild(createLine(250, 818, 250, 868))
+
+        //$("#btnTestScan").on("click", function () {
+        //    //alert("test scan");
+        //    //onScan.simulate(document, 'chealy|FreezeDown2020');
+        //    onScan.simulate(document, [48, 49, 50]);
+        //    var IsItShown = ($("#editModal").data('bs.modal') || {})._isShown    // Bootstrap 4
+        //    alert("Modal Shown: " + IsItShown);
+        //})
+
+        // Scanning event listener
+        //onScan.attachTo(document, {
+        //    suffixKeyCodes: [13], // enter-key expected at the end of a scan
+        //    reactToPaste: true, // Compatibility to built-in scanners in paste-mode (as opposed to keyboard-mode)
+        //    onScan: function (sCode, iQty) { // Alternative to document.addEventListener('scan')
+        //        //console.log('Scanned: ' + iQty + 'x ' + sCode);
+        //        alert('Scanned: ' + iQty + 'x ' + sCode);
+        //    },
+        //    onKeyDetect: function (iKeyCode) { // output all potentially relevant key events - great for debugging!
+        //        //console.log('Pressed: ' + iKeyCode);
+        //        //alert('Pressed: ' + iKeyCode);
+        //    }
+        //});
+
+
+
+     });
+
+
+            </script>
+        }
+
+    }
+}
+
+
+<br />
+<br />
+<br />
+
+
+<div class="container">
+
+    @*<div class="bootstrap-iso">*@
+    <div class="row">
+
+        <div class="col-lg-1">
+            <div id="square_G1" class="square_noclk_left_first ">
+                <div id="Display_G1"></div>
+                <div class="squareRelative">G1</div>
+            </div>
+        </div>
+        <div class="col-lg-1">
+            <div id="square_G2" class="square_noclk_right">
+                <div id="Display_G2"></div>
+                <div class="squareRelative">G2</div>
+            </div>
+        </div>
+        <div class="col-lg-1">
+            <div id="square_G3" class="square_noclk_left">
+                <div id="Display_G3"></div>
+                <div class="squareRelative">G3</div>
+            </div>
+        </div>
+        <div class="col-lg-1">
+            <div id="square_G4" class="square_noclk_right">
+                <div id="Display_G4"></div>
+                <div class="squareRelative">G4</div>
+            </div>
+        </div>
+        <div class="col-lg-1">
+            <div id="square_G5" class="square_noclk_left">
+                <div id="Display_G5"></div>
+                <div class="squareRelative">G5</div>
+            </div>
+        </div>
+        <div class="col-lg-1">
+            <div id="square_G6" class="square_noclk_right">
+                <div id="Display_G6"></div>
+                <div class="squareRelative">G6</div>
+            </div>
+        </div>
+        <div class="col-lg-1">
+            <div id="square_G7" class="square_noclk_left">
+                <div id="Display_G7"></div>
+                <div class="squareRelative">G7</div>
+            </div>
+        </div>
+        <div class="col-lg-1">
+            <div id="square_G8" class="square_noclk_right">
+                <div id="Display_G8"></div>
+                <div class="squareRelative">G8</div>
+            </div>
+        </div>
+        <div class="col-lg-1">
+            <div id="square_G9" class="square_noclk_left">
+                <div id="Display_G9"></div>
+                <div class="squareRelative">G9</div>
+            </div>
+        </div>
+        <div class="col-lg-1">
+            <div id="square_G10" class="square_noclk_right">
+                <div id="Display_G10"></div>
+                <div class="squareRelative">G10</div>
+            </div>
+        </div>
+        <div class="col-lg-1">
+            <div id="square_G11" class="square_noclk_left">
+                <div id="Display_G11"></div>
+                <div class="squareRelative">G11</div>
+            </div>
+        </div>
+        <div class="col-lg-1">
+            <div id="square_G12" class="square_noclk_right">
+                <div id="Display_G12"></div>
+                <div class="squareRelative">G12</div>
+            </div>
+        </div>
+        <div class="col-lg-1">
+            <div id="square_G13" class="square_noclk_left">
+                <div id="Display_G13"></div>
+                <div class="squareRelative">G13</div>
+            </div>
+        </div>
+        <div class="col-lg-1">
+            <div id="square_G14" class="square_noclk">
+                <div id="Display_G14"></div>
+                <div class="squareRelative">G14</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+
+        <div class="col-lg-1 ">
+            <div id="square_A" class="square">
+                <div id="Display_A" class="timeDisplay"></div>
+                <div id="Display_Cart_A" class="cartDisplay"></div>
+                <div class="squareRelative">A</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_B" class="square">
+                <div id="Display_B" class="timeDisplay"></div>
+                <div id="Display_Cart_B" class="cartDisplay"></div>
+                <div class="squareRelative">B</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_C" class="square">
+                <div id="Display_C" class="timeDisplay"></div>
+                <div id="Display_Cart_C" class="cartDisplay"></div>
+                <div class="squareRelative">C</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_D" class="square">
+                <div id="Display_D" class="timeDisplay"></div>
+                <div id="Display_Cart_D" class="cartDisplay"></div>
+                <div class="squareRelative">D</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_E" class="square">
+                <div id="Display_E" class="timeDisplay"></div>
+                <div id="Display_Cart_E" class="cartDisplay"></div>
+                <div class="squareRelative">E</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_F" class="square">
+                <div id="Display_F" class="timeDisplay"></div>
+                <div id="Display_Cart_F" class="cartDisplay"></div>
+                <div class="squareRelative">F</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_G" class="square">
+                <div id="Display_G" class="timeDisplay"></div>
+                <div id="Display_Cart_G" class="cartDisplay"></div>
+                <div class="squareRelative">G</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_H" class="square">
+                <div id="Display_H" class="timeDisplay"></div>
+                <div id="Display_Cart_H" class="cartDisplay"></div>
+                <div class="squareRelative">H</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_I" class="square">
+                <div id="Display_I" class="timeDisplay"></div>
+                <div id="Display_Cart_I" class="cartDisplay"></div>
+                <div class="squareRelative">I</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_J" class="square">
+                <div id="Display_J" class="timeDisplay"></div>
+                <div id="Display_Cart_J" class="cartDisplay"></div>
+                <div class="squareRelative">J</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_K" class="square">
+                <div id="Display_K" class="timeDisplay"></div>
+                <div id="Display_Cart_K" class="cartDisplay"></div>
+                <div class="squareRelative">K</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_L" class="square">
+                <div id="Display_L" class="timeDisplay"></div>
+                <div id="Display_Cart_L" class="cartDisplay"></div>
+                <div class="squareRelative">L</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_M" class="square">
+                <div id="Display_M" class="timeDisplay"></div>
+                <div id="Display_Cart_M" class="cartDisplay"></div>
+                <div class="squareRelative">M</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_N" class="square">
+                <div id="Display_N" class="timeDisplay"></div>
+                <div id="Display_Cart_N" class="cartDisplay"></div>
+                <div class="squareRelative">N</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row top30">
+
+        <div class="col-lg-1 ">
+            <div id="square_blank1" class="square_noclk_blank">
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_blank2" class="square_noclk_blank">
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_Z" class="square">
+                <div id="Display_Z" class="timeDisplay"></div>
+                <div id="Display_Cart_Z" class="cartDisplay"></div>
+                <div class="squareRelative">Z</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_Y" class="square">
+                <div id="Display_Y" class="timeDisplay"></div>
+                <div id="Display_Cart_Y" class="cartDisplay"></div>
+                <div class="squareRelative">Y</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_X" class="square">
+                <div id="Display_X" class="timeDisplay"></div>
+                <div id="Display_Cart_X" class="cartDisplay"></div>
+                <div class="squareRelative">X</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_W" class="square">
+                <div id="Display_W" class="timeDisplay"></div>
+                <div id="Display_Cart_W" class="cartDisplay"></div>
+                <div class="squareRelative">W</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_V" class="square">
+                <div id="Display_V" class="timeDisplay"></div>
+                <div id="Display_Cart_V" class="cartDisplay"></div>
+                <div class="squareRelative">V</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_U" class="square">
+                <div id="Display_U" class="timeDisplay"></div>
+                <div id="Display_Cart_U" class="cartDisplay"></div>
+                <div class="squareRelative">U</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_T" class="square">
+                <div id="Display_T" class="timeDisplay"></div>
+                <div id="Display_Cart_T" class="cartDisplay"></div>
+                <div class="squareRelative">T</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_S" class="square">
+                <div id="Display_S" class="timeDisplay"></div>
+                <div id="Display_Cart_S" class="cartDisplay"></div>
+                <div class="squareRelative">S</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_R" class="square">
+                <div id="Display_R" class="timeDisplay"></div>
+                <div id="Display_Cart_R" class="cartDisplay"></div>
+                <div class="squareRelative">R</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_Q" class="square">
+                <div id="Display_Q" class="timeDisplay"></div>
+                <div id="Display_Cart_Q" class="cartDisplay"></div>
+                <div class="squareRelative">Q</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_P" class="square">
+                <div id="Display_P" class="timeDisplay"></div>
+                <div id="Display_Cart_P" class="cartDisplay"></div>
+                <div class="squareRelative">P</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_O" class="square">
+                <div id="Display_O" class="timeDisplay"></div>
+                <div id="Display_Cart_O" class="cartDisplay"></div>
+                <div class="squareRelative">O</div>
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+
+        <div class="col-lg-1 ">
+            <div id="square_blank1" class="square_noclk_blank">
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_blank2" class="square_noclk_blank">
+            </div>
+        </div>
+
+        <div class="col-lg-1 ">
+            <div id="square_F1" class="square_noclk">
+                <div id="Display_F1"></div>
+                <div id="Display_Cart_F1" class="cartDisplay"></div>
+                <div class="squareRelative">F1</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_F2" class="square_noclk_right">
+                <div id="Display_F2"></div>
+                <div id="Display_Cart_F2" class="cartDisplay"></div>
+                <div class="squareRelative">F2</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_F3" class="square_noclk_left">
+                <div id="Display_F3"></div>
+                <div id="Display_Cart_F3" class="cartDisplay"></div>
+                <div class="squareRelative">F3</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_F4" class="square_noclk_right">
+                <div id="Display_F4"></div>
+                <div id="Display_Cart_F4" class="cartDisplay"></div>
+                <div class="squareRelative">F4</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_F5" class="square_noclk_left">
+                <div id="Display_F5"></div>
+                <div id="Display_Cart_F5" class="cartDisplay"></div>
+                <div class="squareRelative">F5</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_F6" class="square_noclk_right">
+                <div id="Display_F6"></div>
+                <div id="Display_Cart_F6" class="cartDisplay"></div>
+                <div class="squareRelative">F6</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_F7" class="square_noclk_left">
+                <div id="Display_F7"></div>
+                <div id="Display_Cart_F7" class="cartDisplay"></div>
+                <div class="squareRelative">F7</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_F8" class="square_noclk_right">
+                <div id="Display_F8"></div>
+                <div id="Display_Cart_F8" class="cartDisplay"></div>
+                <div class="squareRelative">F8</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_F9" class="square_noclk_left">
+                <div id="Display_F9"></div>
+                <div id="Display_Cart_F9" class="cartDisplay"></div>
+                <div class="squareRelative">F9</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_F10" class="square_noclk_right">
+                <div id="Display_F10"></div>
+                <div id="Display_Cart_F10" class="cartDisplay"></div>
+                <div class="squareRelative">F10</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_F11" class="square_noclk_left">
+                <div id="Display_F11"></div>
+                <div id="Display_Cart_F11" class="cartDisplay"></div>
+                <div class="squareRelative">F11</div>
+            </div>
+        </div>
+        <div class="col-lg-1 ">
+            <div id="square_F12" class="square_noclk outLineBottom">
+                <div id="Display_F12"></div>
+                <div id="Display_Cart_F12" class="cartDisplay"></div>
+                <div class="squareRelative">F12</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 " style="margin-left: 10px">
+            <font>
+                <strong>
+                    Double
+                    Doors
+                </strong>
+            </font>
+        </div>
+    </div>
+
+
+ 
+
+
+
+    @*<div class="row">
+            <div class="col-lg-12">
+            </div>
+        </div>*@
+    @*<div class="row">
+            <div class="col-lg-12">
+                <br />
+                <input type="button" id="btnTestScan" value="Test Scan">
+            </div>
+        </div>*@
+    <div id="dialog" title="Info">
+        <p>Please Select a Table, and Specify a New Value.</p>
+    </div>
+
+    <div class="modal fade" id="editModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="fdModFrm" autocomplete="off">
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="editModalHeader">Insert Cart</h3>
+                        @*<a href="#" class="close" data-dismiss="modal">&times;</a>*@
+                    </div>
+                    <div id="editModalBody" class="modal-body">
+                        @*<form id="fdModFrm" autocomplete="off">*@
+                        <div class="row">
+                            <div class="col-lg-3">
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group mb-2">
+                                    @Html.Label("UserName:", htmlAttributes: new { @class = "control-label col-lg-2 lb-md" })
+                                    @*@Html.TextBoxFor(m => m.UserName, htmlAttributes: new { @class = "form-control changeable  form-control-sm", @autocomplete = "off" })*@
+                                    @Html.DropDownList("UserName", Model.UserNames,
+                                    "Select", new { @class = "selectpicker form-control form-control-lg", @style = " font-size: 20px; height:50px" })
+                                    @*@Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })*@
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-3">
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group mb-2 ">
+                                    @Html.Label("Password:", htmlAttributes: new { @class = "control-label col-lg-2 lb-md" })
+                                    @Html.PasswordFor(m => m.Password, htmlAttributes: new { @class = "form-control changeable  form-control-sm", @autocomplete = "off", @style = "height:50px" })
+                                    @*@Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })*@
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                            </div>
+                        </div>
+                        <div class="row" id="divCartLine">
+                            <div class="col-lg-3">
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group mb-2 editDivFormat">
+                                    @Html.Label("Package Line:", htmlAttributes: new { @class = "control-label col-lg-2 lb-md" })
+                                    @Html.DropDownList("LineNumberStart", Model.CartLines,
+                                    "Select", new { @class = "selectpicker form-control form-control-lg", @style = "font-size: 20px;height:50px" })
+                                    @*@Html.ValidationMessageFor(model => model.LineNumberStart, "", new { @class = "text-danger" })*@
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                            </div>
+                        </div>
+                        <div class="row" id="divCartNumber">
+                            <div class="col-lg-3">
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group mb-2 editDivFormat">
+                                    @Html.Label("Cart Number:", htmlAttributes: new { @class = "control-label col-lg-2 lb-md" })
+                                    @Html.DropDownList("CartNumberStart", Model.CartNumbers,
+                                    "Select", new { @class = "selectpicker form-control form-control-lg", @style = " font-size: 20px;height:50px" })
+                                    @*@Html.ValidationMessageFor(model => model.CartNumberStart, "", new { @class = "text-danger" })*@
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-3">
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group mb-2 editDivFormat">
+                                    <label id="lblError" class="text-danger"></label>
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                            </div>
+                        </div>
+
+                        @Html.Hidden("LocationCode")
+                        @Html.Hidden("LineNumberEnd")
+                        @Html.Hidden("CartNumberEnd")
+
+                        @*</form>*@
+                    </div>
+
+                    <div class="modal-footer">
+                        <a href="#" class="btn btn-default" data-dismiss="modal" id="btnCancel">Cancel</a>
+                        <input type="reset" value="OK" class="btn btn-success" id="btnSubmitStart" />
+                        <input type="reset" value="Submit" class="btn btn-success" id="btnSubmitEnd" />
+                        @*<input type="reset" class="btn btn-default" data-dismiss="modal" id="btnCancel" value="Cancel"/>*@
+
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="confirmModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h3 class="modal-title">Confirmation</h3>
+                    @*<a href="#" class="close" data-dismiss="modal">&times;</a>*@
+                </div>
+                <div id="confirmModalBody" class="modal-body">
+
+                    <div class="row">
+                        @*<div class="col-lg-2">
+                            </div>*@
+                        <div class="col-lg-12">
+                            <label style="font-size: 20px">You Selected The Following Values:</label>
+                        </div>
+                        @*<div class="col-lg-2">
+                            </div>*@
+
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-lg-3">
+                        </div>
+                        <div class="col-lg-6">
+                            <label id="lblLocation" style="font-size: 20px"></label>
+                        </div>
+                        <div class="col-lg-3">
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3">
+                        </div>
+                        <div class="col-lg-6">
+                            <label id="lblCartLine" style="font-size: 20px"></label>
+                        </div>
+                        <div class="col-lg-3">
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3">
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group mb-2 ">
+                                <label id="lblCartNumber" style="font-size: 20px"></label>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                        </div>
+                    </div>
+
+
+                    @Html.Hidden("ConfirmUserName")
+                    @Html.Hidden("ConfirmPassword")
+
+                    @Html.Hidden("ConfirmLocationCode")
+                    @Html.Hidden("ConfirmLineNumber")
+                    @Html.Hidden("ConfirmCartNumber")
+
+
+                </div>
+
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-default" data-dismiss="modal" id="btnConfirmCancel">Cancel</a>
+                    <input type="reset" value="Submit" class="btn btn-success" id="btnConfirm" />
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+
+</div>
+

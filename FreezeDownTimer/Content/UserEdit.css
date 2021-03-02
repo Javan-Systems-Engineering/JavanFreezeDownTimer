@@ -1,0 +1,19 @@
+﻿.move-left {
+    width: auto;
+    box-shadow: none;
+    margin-left: 10px
+}
+
+.editDivFormat {
+    white-space: nowrap;
+}
+
+.inlineGroup {
+    display: inline
+}
+
+.sizeCheckbox {
+    width: 15px;
+    height: 15px;
+    margin-top: 5px
+}

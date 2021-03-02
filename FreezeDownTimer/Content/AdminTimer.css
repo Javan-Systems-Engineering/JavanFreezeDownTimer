@@ -1,0 +1,20 @@
+﻿body {
+    background-color: #eaf1f8;
+}
+table {
+    border: none;
+    border-collapse: collapse;
+    color: white;
+}
+
+    table td {
+        padding: 5px;
+        border: none;
+        color: #696969;
+    }
+table th {
+    padding: 6px 5px;
+    text-align: left;
+    background-color: #eaf1f8;
+    border: none;
+}

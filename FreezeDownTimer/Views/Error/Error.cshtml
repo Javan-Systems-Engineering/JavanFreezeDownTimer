@@ -1,0 +1,22 @@
+﻿@{
+    Layout = "~/Views/Shared/_layoutPage4.cshtml";
+    ViewBag.Title = "FreezeDownError";
+    var Message = ViewBag.Message;
+
+}
+@section scripts
+{
+    <link href="~/Content/Menu.css" rel="stylesheet" type="text/css" />
+
+}
+
+<h2>An Application Error Occurred.  Please Contact Javan Systems Engineering Personnel.</h2>
+<br />
+<br />
+
+<h2>Error Details: @Message</h2>
+<br />
+<br />
+
+@Html.ActionLink("Return to Application", "Timer", "Index")
+

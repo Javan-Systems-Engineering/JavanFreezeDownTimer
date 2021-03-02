@@ -1,0 +1,342 @@
+﻿@model FreezeDownTimer.Models.AuditReportFilterModel
+
+
+@{
+    Layout = "~/Views/Shared/_layoutPage4.cshtml";
+    ViewBag.Title = "AuditReport";
+}
+
+
+@section scripts
+{
+
+    <link href="~/startbootstrap/dist/css/styles.css" rel="stylesheet" />
+    <link href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css" rel="stylesheet" crossorigin="anonymous" />
+    <link href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.dataTables.min.css" rel="stylesheet" crossorigin="anonymous" />
+    <link href="~/Content/Menu.css" rel="stylesheet" type="text/css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/js/all.min.js" crossorigin="anonymous"></script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
+    @*<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>*@
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js" crossorigin="anonymous"></script>
+
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.2/js/dataTables.buttons.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.print.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.3/js/buttons.html5.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/colreorder/1.5.2/js/dataTables.colReorder.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/plug-ins/1.10.21/sorting/datetime-moment.js" crossorigin="anonymous"></script>
+
+
+
+    <script>
+        $(document).ready(function () {
+
+
+            $.fn.dataTable.moment('M/D/YYYY HH:m:s');
+
+            var StartDate = @Html.Raw(Json.Encode(ViewBag.StartDate));
+            var EndDate = @Html.Raw(Json.Encode(ViewBag.EndDate));
+
+            var datatable = $('#dataTable').DataTable({
+                'pageLength': 20,
+                orderCellsTop: true,
+                colReorder: { order: [0,1,2,3,4,5] },
+                dom: 'Bfrtip',
+                buttons: [
+                    'excel',
+                    'print'
+                ],
+                "order": [[1, "desc"]],
+                "processing": true,
+                 "ajax": {
+                    dataSrc: "",
+                     url: '@Url.Action("GetAuditReport", "Report")',
+                     data: function (d) {
+                         d.StartDate = StartDate;
+                         d.EndDate = EndDate;
+                     },
+                    dataFilter: function (reps) {
+                        console.log(reps);
+                        return reps;
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+
+                 },
+                       "columns": [
+
+                            { "data": "UserName" },
+                            {
+                               "data": "StartTime",
+                               //"type": "date ",
+                               "render": function (value) {
+                                   if (value === null) return "";
+                                   var pattern = /Date\(([^)]+)\)/;
+                                   var results = pattern.exec(value);
+                                   var dt = new Date(parseFloat(results[1]));
+                                   return (dt.getMonth() + 1) + "/" + dt.getDate() + "/" + dt.getFullYear() +
+                                       " " + dt.getHours().toString().padStart(2, '0') + ":" + dt.getMinutes().toString().padStart(2, '0') + ":" + dt.getSeconds().toString().padStart(2, '0');
+                               }
+                            },
+                            {
+                               "data": "EndTime",
+                               //"type": "date ",
+                                "render": function (value) {
+                                    if (value === null) return "";
+                                    var pattern = /Date\(([^)]+)\)/;
+                                    var results = pattern.exec(value);
+                                    var dt = new Date(parseFloat(results[1]));
+                                    return (dt.getMonth() + 1) + "/" + dt.getDate() + "/" + dt.getFullYear() +
+                                        " " + dt.getHours().toString().padStart(2, '0') + ":" + dt.getMinutes().toString().padStart(2, '0') + ":" + dt.getSeconds().toString().padStart(2, '0');
+                                }
+                            },
+                            { "data": "LocationCode" },
+                            { "data": "Cart" },
+                            {
+                               "data": "CartRemoved",
+                               //"type": "date ",
+                               "render": function (value) {
+                                   if (value === null) return "";
+                                   var pattern = /Date\(([^)]+)\)/;
+                                   var results = pattern.exec(value);
+                                   var dt = new Date(parseFloat(results[1]));
+                                   return (dt.getMonth() + 1) + "/" + dt.getDate() + "/" + dt.getFullYear() +
+                                       " " + dt.getHours().toString().padStart(2, '0') + ":" + dt.getMinutes().toString().padStart(2, '0') + ":" + dt.getSeconds().toString().padStart(2, '0');
+                               }
+                           }
+                ],
+
+
+                initComplete: function () {
+                    this.api().columns([0, 3, 4]).every(function () {
+                        var column = this;
+                        var select = $('<select><option value=""></option></select>')
+                            .appendTo($('thead tr:eq(1) td').eq(this.index()))
+                            .on('change', function () {
+                                var val = $.fn.dataTable.util.escapeRegex(
+                                    $(this).val()
+                                );
+                                column
+                                    .search(val ? '^' + val + '$' : '', true, false)
+                                    .draw();
+                            });
+                        column.data().unique().sort().each(function (d, j) {
+                            select.append('<option value="' + d + '">' + d + '</option>');
+                        });
+                    });
+                    this.api().columns([1, 2, 5]).every(function () {
+                        var column = this;
+                        var title = $(column.header()).text();
+                        var input = $('<input type="text" placeholder="Search ' + title + '" />')
+                            .appendTo($('thead tr:eq(1) td').eq(this.index()))
+                            .on('keyup change', function () {
+                                if (column.search() !== this.value) {
+                                    column
+                                        .search(this.value)
+                                        .draw();
+                                }
+                            });
+                    });
+
+
+                }
+
+            });
+
+            $("#cmdClear").click(function () {
+
+                var EndDate = "";
+                var StartDate = "";
+
+                var StartDateVal = $("#StartDate").val()
+                var EndDateVal = $("#EndDate").val()
+
+
+                if ((EndDateVal.length > 0) && (StartDateVal.length > 0)) {
+
+
+                    var url = "/Report/FilterAuditReport";
+
+                    $.ajax({
+                        //contentType: 'application/json; charset=utf-8',
+                        //dataType: 'json',
+                        type: 'POST',
+                        url: url,
+                        data: { StartDate: StartDate, EndDate: EndDate },
+                        success: function (data) {
+                            window.location.href = data;
+                            //$('#result').html('"PassThings()" successfully called.');
+                        },
+                        error: function (request, status, error) {
+                            var msg = JSON.parse(request.responseText);
+                            $('#lblError').text(msg);
+
+                        },
+                        failure: function (response) {
+                            $('#result').html(response);
+                            alert(response.responseJSON);
+                        }
+                    });
+                }
+
+
+            });
+
+            $(".dateRange").change(function () {
+
+                var StartDate = $("#StartDate").val();
+                var EndDate = $("#EndDate").val();
+
+
+                if ((EndDate.length > 0) && (StartDate.length > 0)) {
+
+
+                    if (compareDates(StartDate, EndDate) == false)  {
+                        $('#lblError').text("Please Select a Valid Date Range");
+                        return false
+                    }
+
+                    var url = "/Report/FilterAuditReport";
+
+                    $.ajax({
+                        //contentType: 'application/json; charset=utf-8',
+                        //dataType: 'json',
+                        type: 'POST',
+                        url: url,
+                        data: { StartDate: StartDate, EndDate: EndDate },
+                        success: function (data) {
+                            window.location.href = data;
+                            //$('#result').html('"PassThings()" successfully called.');
+                        },
+                        error: function (request, status, error) {
+                            var msg = JSON.parse(request.responseText);
+                            $('#lblError').text(msg);
+
+                        },
+                        failure: function (response) {
+                            $('#result').html(response);
+                            alert(response.responseJSON);
+                        }
+                    });
+                }
+
+
+            });
+            function compareDates(d1, d2) {
+                var parts = d1.split('-');
+                var d1 = Number(parts[1] + parts[2] + parts[0]);
+                parts = d2.split('-');
+                var d2 = Number(parts[1] + parts[2] + parts[0]);
+                return d1 < d2;
+            }
+
+
+        });
+
+
+
+
+    </script>
+
+
+}
+
+
+<div class="container body-content">
+    <br />
+    <br />
+    <br />
+    <br />
+
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-md-2">
+                    <i class="fas fa-table mr-1"></i>
+                    Audit Report
+                </div>
+                <div class="col-md-2">
+                    <label class="small mb-1" for="StartDate">Start Date</label>
+                    @if (Model.StartDate.HasValue)
+                    {
+                        @Html.EditorFor(model => model.StartDate, new { htmlAttributes = new { @class = "datepicker form-control form-control-sm dateRange", @Value = Model.StartDate.Value.ToString("yyyy-MM-dd") } })
+                    }
+                    else
+                    {
+                        @Html.EditorFor(model => model.StartDate, new { htmlAttributes = new { @class = "datepicker form-control form-control-sm dateRange" } })
+                    }
+                </div>
+                <div class="col-md-2">
+                    <label class="small mb-1" for="StartDate">End Date</label>
+                    @if (Model.EndDate.HasValue)
+                    {
+                        @Html.EditorFor(model => model.EndDate, new { htmlAttributes = new { @class = "datepicker form-control form-control-sm dateRange", @Value = Model.EndDate.Value.ToString("yyyy-MM-dd") } })
+                    }
+                    else
+                    {
+                        @Html.EditorFor(model => model.EndDate, new { htmlAttributes = new { @class = "datepicker form-control form-control-sm dateRange" } })
+                    }
+                </div>
+                <div class="col-md-2">
+                    <button type="button" name="cmdClear" id="cmdClear" class="myButton btn btn-sm form-control mt-4">Clear Dates</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                </div>
+                <div class="col-md-4">
+                    <label id="lblError" class="text-danger"></label>
+                </div>
+
+
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered fdDataTable display dataTable" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Location</th>
+                            <th>Cart</th>
+                            <th>Cart Removed</th>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+
+                    </tbody>
+                </table>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+@*</div>*@
+

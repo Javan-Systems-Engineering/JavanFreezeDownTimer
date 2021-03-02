@@ -1,0 +1,113 @@
+﻿@using Models;
+@using FreezeDownTimer.Helpers;
+@model FreezeDownTimer.Models.RoleViewModel
+
+@{
+    ViewBag.Title = "RoleCreate";
+    Layout = "~/Views/Shared/_LayoutPage4.cshtml";
+}
+@section scripts
+{
+    <link href="~/Content/Menu.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/UserEdit.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+
+
+
+        })
+    </script>
+
+}
+@using (Html.BeginForm("RoleCreateDB", "Admin2", FormMethod.Post, new { encType = "multipart/form-data" }))
+{
+<div class="container">
+
+    <div class="row">
+        <div class="col-md-2 mb-2 mt-4">
+            <h5>Add Role</h5>
+        </div>
+        <div class="col-md-8 mb-2 mt-4">
+        </div>
+        <div class="col-md-2 mb-2">
+            <label id="lblSave" class="mt-3 fdLabel" style="color:red; font-size: 18px"></label>
+        </div>
+    </div>
+
+
+
+    @* User Infromation*@
+    @* User Infromation*@
+    <div class="card mb-3">
+
+        <h5 class="card-header" style="background-color: lightblue">User Details</h5>
+
+        <div class="card-body">
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="form-group mb-2 editDivFormat">
+                        @Html.Label("Role Name:", htmlAttributes: new { @class = "control-label col-lg-6 lb-sm" })
+                        @Html.TextBoxFor(model => model.RoleName, htmlAttributes: new { @class = "form-control changeable  form-control-sm" })
+                        @Html.ValidationMessageFor(model => model.RoleName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-lg-6">
+
+                </div>
+
+            </div>
+
+
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="form-group mb-2 editDivFormat">
+                        @Html.Label("Role Description:", htmlAttributes: new { @class = "control-label col-lg-12 lb-sm" })
+                        @Html.EditorFor(model => model.RoleDescription, new { htmlAttributes = new { @class = "form-control changeable", @rows = "3", @height = "100%", @maxlength = "255" } })
+                        @Html.ValidationMessageFor(model => model.RoleDescription, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+
+            </div>
+
+
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="form-group mb-2 editDivFormat">
+                        @Html.Label("System Role:", htmlAttributes: new { @class = "control-label col-lg-6 lb-sm", @style = "display: block" })
+                        @Html.CheckBoxFor(m => m.IsSysAdmin, new { @class = "move-left  changeable   sizeCheckbox" })
+                        @Html.ValidationMessageFor(model => model.IsSysAdmin, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-lg-6">
+
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-2 mt-2">
+                    <button type="submit" name="cmdSave" value="Save" class="btn btn-primary btn-sm form-control">Save</button>
+                </div>
+                <div class="col-lg-10 mt-2">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-2 mt-3">
+                    @Html.ActionLink("Go To Roles", "Roles", "Admin2")
+                </div>
+                <div class="col-lg-9 mt-3">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    @Html.HiddenFor(m => m.RoleID)
+</div>
+    }

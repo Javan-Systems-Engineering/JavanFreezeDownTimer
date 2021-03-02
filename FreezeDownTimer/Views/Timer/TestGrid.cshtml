@@ -1,0 +1,965 @@
+﻿@using FreezeDownTimer.Filters
+
+@model Models.FreezeDownViewModel
+
+
+
+@{
+    Layout = "~/Views/Shared/_layoutPage4.cshtml";
+}
+@section scripts
+{
+    <link href="~/Content/TestGrid.css" rel="stylesheet" />
+    <link href="~/Content/Menu.css" rel="stylesheet" type="text/css" />
+
+    @*<link href="@Url.Content("~/Content/CustomBootstrap/bootstrap.min.css")" rel="stylesheet" />*@
+
+    @{
+
+        Controller ctl = (Controller)ViewBag.Controller;
+        if (ctl.HasRole("OperatorViewOnly"))
+        {
+            <script type="text/javascript">
+    $(document).ready(function () {
+
+
+    var lstTimer = @Html.Raw(Json.Encode(ViewBag.TimerList));
+
+    var x = setInterval(function () {
+    UpdateTimer();
+    }, 1000);
+
+    function _SetTimerDisplay(objTime, label, cartlabel, cart )
+    {
+            var now = new Date().getTime();
+            // Find the distance between now and the count down date
+            var distance = (new Date(objTime.ReleaseDateTime).getTime()) - now;
+
+            // Time calculations for days, hours, minutes and seconds
+            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            var h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            if (h < 10) {
+                h = '0'.concat(h);
+            }
+
+            var m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            if (m < 10) {
+                m = '0'.concat(m);
+            }
+
+            var s = Math.floor((distance % (1000 * 60)) / 1000);
+            if (s < 10) {
+                s =  '0'.concat(s);
+            }
+
+            // If the count down is over, write some text
+        if (distance < 0) {
+                $('#' + label).parent().css("cursor", "pointer");
+                $('#' + label).parent().css("pointer-events", "auto");
+                $('#' + label).parent().css("background-color", "green");
+                objTime.TimeDisplayName = "COMPLETE";
+                $('#' + label).text("COMPLETE");
+                $('#' + cartlabel).text(cart);
+            }
+        else {
+                $('#' + label).parent().css("cursor", "auto");
+                $('#' + label).parent().css("pointer-events", "none");
+                $('#' + label).parent().css("background-color", "red");
+                // Output the result in an element with id="Display"
+                $('#' + label).text(h + ":" + m + ":" + s);
+                $('#' + cartlabel).text(cart);
+
+            }
+
+    }
+
+    // Set the date we're counting down to
+     function UpdateTimer() {
+        for (var i = 0; i < lstTimer.length; i++) {
+            var iCount = 0;
+            if (lstTimer[i].TimeDisplayName != 'COMPLETE') {
+               _SetTimerDisplay(lstTimer[i], lstTimer[i].TimeDisplayName, lstTimer[i].CartDisplayName, lstTimer[i].CartLineNumber);
+               iCount++;
+            }
+        }
+        var vFound = lstTimer.find(function (element) {
+            return (element.TimeDisplayName != "COMPLETE" ? true : false);
+        });
+         if (vFound == undefined) {
+            clearInterval(x);
+        }
+     }
+
+
+   $("#dialog").dialog({ autoOpen: false });
+
+
+
+
+     });
+
+            </script>
+        }
+
+        else
+        {
+
+            <script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#pgBody").on("keypress", function (e) {
+            //alert("keycode: " + e.keyCode)
+            //var id = $(e.target).closest(".modal").attr("id")
+
+            if ($('#editModal').is(':visible') && ((e.keycode == 13 || e.which == 13))) {
+                var hdn = $("#btnSubmitStart").is(":visible");
+                if (hdn == false) {
+                    $("#btnSubmitEnd").focus().click();
+                }
+                else {
+                    $("#btnSubmitStart").focus().click();
+                }
+                $("#editModal").modal('hide')
+
+            }
+
+
+            if ($('#confirmModal').is(':visible') && ((e.keycode == 13 || e.which == 13))) {
+                $("#btnConfirm").focus().click();
+                $("#confirmModal").modal('hide')
+
+            }
+
+
+        });
+
+    var lstTimer = @Html.Raw(Json.Encode(ViewBag.TimerList));
+
+    var x = setInterval(function () {
+    UpdateTimer();
+    }, 1000);
+
+    function _SetTimerDisplay(objTime, label, cartlabel, cart )
+    {
+            var now = new Date().getTime();
+            // Find the distance between now and the count down date
+            var distance = (new Date(objTime.ReleaseDateTime).getTime()) - now;
+
+            // Time calculations for days, hours, minutes and seconds
+            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            var h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            if (h < 10) {
+                h = '0'.concat(h);
+            }
+
+            var m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            if (m < 10) {
+                m = '0'.concat(m);
+            }
+
+            var s = Math.floor((distance % (1000 * 60)) / 1000);
+            if (s < 10) {
+                s =  '0'.concat(s);
+            }
+
+            // If the count down is over, write some text
+        if (distance < 0) {
+                $('#' + label).parent().css("cursor", "pointer");
+                $('#' + label).parent().css("pointer-events", "auto");
+                $('#' + label).parent().css("background-color", "green");
+                objTime.TimeDisplayName = "COMPLETE";
+                $('#' + label).text("COMPLETE");
+                $('#' + cartlabel).text(cart);
+            }
+        else {
+                $('#' + label).parent().css("cursor", "auto");
+                $('#' + label).parent().css("pointer-events", "none");
+                $('#' + label).parent().css("background-color", "red");
+                // Output the result in an element with id="Display"
+                $('#' + label).text(h + ":" + m + ":" + s);
+                $('#' + cartlabel).text(cart);
+
+            }
+
+    }
+
+    // Set the date we're counting down to
+     function UpdateTimer() {
+        for (var i = 0; i < lstTimer.length; i++) {
+            var iCount = 0;
+            if (lstTimer[i].TimeDisplayName != 'COMPLETE') {
+               _SetTimerDisplay(lstTimer[i], lstTimer[i].TimeDisplayName, lstTimer[i].CartDisplayName, lstTimer[i].CartLineNumber);
+               iCount++;
+            }
+        }
+        var vFound = lstTimer.find(function (element) {
+            return (element.TimeDisplayName != "COMPLETE" ? true : false);
+        });
+         if (vFound == undefined) {
+            clearInterval(x);
+        }
+     }
+
+ $('.clickableSquare').on("click", function () {
+       var id = $(this).attr('id');
+       var color = $(this).css("background-color");
+       var hexColor = rgbToHex(color);
+       var location = id.split("_")
+       location = location[1]
+       $("#LocationCode").val(location)
+       if (hexColor == "#eaf1f8") {
+           $("#btnSubmitStart").show()
+           $("#btnSubmitEnd").hide()
+           $("#divCartLine").show()
+           $("#divCartNumber").show()
+           $("#editModalHeader").text("Insert Cart")
+       }
+       else
+       {
+           $("#btnSubmitStart").hide()
+           $("#btnSubmitEnd").show()
+           $("#divCartLine").hide()
+           $("#divCartNumber").hide()
+           cartDisplay = $(this).find('[id*="Display_Cart"]')
+           var cartText = cartDisplay.text()
+           var cartLine = cartText.split(" ")[0]
+           var cartNumber =  cartText.split(" ")[2]
+           cartNumber = cartNumber.replace(/\D/g, "");
+           cartNumber = parseInt(cartNumber)
+           $("#LineNumberEnd").val(cartLine)
+           $("#CartNumberEnd").val(cartNumber)
+           $("#editModalHeader").text("Remove Cart")
+       }
+       //$("#editModal").modal("show");
+        $("#editModal").modal({ "backdrop": "static" });
+    });
+
+    var hexDigits = new Array
+            ("0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f");
+
+    //Function to convert rgb color to hex format
+    function rgbToHex(rgb) {
+     rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+     return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+    }
+
+    function hex(x) {
+      return isNaN(x) ? "00" : hexDigits[(x - x % 16) / 16] + hexDigits[x % 16];
+    }
+
+        $("#btnSubmitStart").on("click", function () {
+
+            var UserName = $("#UserName").val()
+            var Password = $("#Password").val()
+            var CartLine =  $("#LineNumberStart").val()
+            var CartNumber = $("#CartNumberStart").val()
+            var LocationCode  = $("#LocationCode").val()
+
+            $("#ConfirmUserName").val(UserName)
+            $("#ConfirmPassword").val(Password)
+            $("#ConfirmLocationCode").val(LocationCode)
+            $("#ConfirmLineNumber").val(CartLine)
+            $("#ConfirmCartNumber").val(CartNumber)
+
+            $("#lblLocation").text("Location " + LocationCode)
+            $("#lblCartLine").text("Package Line " + CartLine)
+            $("#lblCartNumber").text("Cart Number " + CartNumber)
+
+
+            $('#editModal').modal('hide')
+            $('#confirmModal').modal({ "backdrop": "static" })
+
+     })
+
+     $("#btnSubmitEnd").on("click", function () {
+
+         var formData = $("#fdModFrm").serialize();
+         var url = "/Timer/EndFreeze";
+
+         $.ajax({
+             //contentType: 'application/json; charset=utf-8',
+             //dataType: 'json',
+             type: 'POST',
+             url: url,
+             data: formData,
+             success: function (data) {
+                 window.location.href = data;
+                 $('#result').html('"PassThings()" successfully called.');
+             },
+             error: function (request, status, error) {
+                 var msg = JSON.parse(request.responseText);
+                 $('#lblError').text(msg);
+
+             },
+             failure: function (response) {
+                 $('#result').html(response);
+                 alert(response.responseJSON);
+             }
+         });
+
+     });
+
+     $("#btnCancel").on("click", function () {
+         $("#UserName").val("");
+         $("#Password").val("");
+         $("#LineNumberStart").val("");
+         $("#CartNumberStart").val("");
+         $("#lblError").text("");
+     });
+
+     $("#btnConfirm").on("click", function () {
+
+         $('#confirmModal').modal('hide')
+
+         var UserName = $("#ConfirmUserName").val()
+         var Password = $("#ConfirmPassword").val()
+         var CartLine = $("#ConfirmLineNumber").val()
+         var CartNumber = $("#ConfirmCartNumber").val()
+         var LocationCode = $("#ConfirmLocationCode").val()
+         var url = "/Timer/StartFreeze1";
+
+         $.ajax({
+             //contentType: 'application/json; charset=utf-8',
+             //dataType: 'json',
+             type: 'POST',
+             url: url,
+             data: { UserName: UserName, Password: Password, CartLine: CartLine, CartNumber: CartNumber, LocationCode: LocationCode},
+                success: function (data) {
+                     window.location.href = data;
+                    $('#result').html('"PassThings()" successfully called.');
+                },
+
+             error: function (request, status, error) {
+                    $("#UserName").val(UserName);
+                    $("#Password").val(Password);
+                    $("#LineNumberStart").val(CartLine);
+                    $("#CartNumberStart").val(CartNumber);
+                    var msg = JSON.parse(request.responseText);
+                    $('#lblError').text(msg);
+                    $("#editModal").modal({ "backdrop": "static" });
+
+                },
+                failure: function (response) {
+                    $('#result').html(response);
+                    alert(response.responseJSON);
+                }
+            });
+
+
+
+
+     })
+
+        $("#btnConfirmCancel").on("click", function () {
+
+           var UserName = $("#ConfirmUserName").val()
+           var Password = $("#ConfirmPassword").val()
+           var CartLine = $("#ConfirmLineNumber").val()
+            var CartNumber = $("#ConfirmCartNumber").val()
+            var LocationCode = $("#ConfirmLocationCode").val()
+
+            $("#UserName").val(UserName)
+            $("#Password").val(Password)
+            $("#LineNumberStart").val(CartLine)
+            $("#CartNumberStart").val(CartNumber)
+            $("#LocationCode").val(LocationCode)
+
+
+            $('#confirmModal').modal('hide')
+            //$('#editModal').modal('show')
+            $("#editModal").modal({ "backdrop": "static" });
+
+        })
+
+        $('#editModal').on('shown.bs.modal', function (e) {
+            $("#editModalBody").removeClass('modal-open');
+            $("#pgBody").css({ "padding-right": "" });
+
+        });
+
+
+
+   $("#dialog").dialog({ autoOpen: false });
+
+
+        //$("#btnTestScan").on("click", function () {
+        //    //alert("test scan");
+        //    //onScan.simulate(document, 'chealy|FreezeDown2020');
+        //    onScan.simulate(document, [48, 49, 50]);
+        //    var IsItShown = ($("#editModal").data('bs.modal') || {})._isShown    // Bootstrap 4
+        //    alert("Modal Shown: " + IsItShown);
+        //})
+
+        // Scanning event listener
+        //onScan.attachTo(document, {
+        //    suffixKeyCodes: [13], // enter-key expected at the end of a scan
+        //    reactToPaste: true, // Compatibility to built-in scanners in paste-mode (as opposed to keyboard-mode)
+        //    onScan: function (sCode, iQty) { // Alternative to document.addEventListener('scan')
+        //        //console.log('Scanned: ' + iQty + 'x ' + sCode);
+        //        alert('Scanned: ' + iQty + 'x ' + sCode);
+        //    },
+        //    onKeyDetect: function (iKeyCode) { // output all potentially relevant key events - great for debugging!
+        //        //console.log('Pressed: ' + iKeyCode);
+        //        //alert('Pressed: ' + iKeyCode);
+        //    }
+        //});
+
+
+
+     });
+
+
+            </script>
+        }
+    }
+
+}
+@*<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Test Grid</title>
+        <link href="~/Content/TestGrid.css" rel="stylesheet" />
+    </head>
+
+    <body>*@
+<div style="clear: both;">
+</div>
+<br />
+<br />
+<div class="myContainer">
+    <div class="blankSquareBorderTopLeft"></div>
+    <div class="blankSquareBorderTop"></div>
+    <div id="square_G1" class="darkBlueSquareBorderTop">
+        <div id="Display_G1" class="timeDisplay"></div>
+        <div id="Display_Cart_G1" class="cartDisplay"></div>
+        <div class="squareLabel">G1</div>
+    </div>
+    <div id="square_G2" class="darkBlueSquareBorderTop">
+        <div id="Display_G2" class="timeDisplay"></div>
+        <div id="Display_Cart_G2" class="cartDisplay"></div>
+        <div class="squareLabel">G2</div>
+    </div>
+    <div id="square_G3" class="darkBlueSquareBorderTop">
+        <div id="Display_G3" class="timeDisplay"></div>
+        <div id="Display_Cart_G3" class="cartDisplay"></div>
+        <div class="squareLabel">G3</div>
+    </div>
+    <div id="square_G4" class="darkBlueSquareBorderTop">
+        <div id="Display_G4" class="timeDisplay"></div>
+        <div id="Display_Cart_G4" class="cartDisplay"></div>
+        <div class="squareLabel">G4</div>
+    </div>
+    <div id="square_G5" class="darkBlueSquareBorderTop">
+        <div id="Display_G5" class="timeDisplay"></div>
+        <div id="Display_Cart_G5" class="cartDisplay"></div>
+        <div class="squareLabel">G5</div>
+    </div>
+    <div  id="square_G6" class="darkBlueSquareBorderTop">
+        <div id="Display_G6" class="timeDisplay"></div>
+        <div id="Display_Cart_G6" class="cartDisplay"></div>
+        <div class="squareLabel">G6</div>
+    </div>
+    <div id="square_G7" class="darkBlueSquareBorderTop">
+        <div id="Display_G7" class="timeDisplay"></div>
+        <div id="Display_Cart_G7" class="cartDisplay"></div>
+        <div class="squareLabel">G7</div>
+    </div>
+    <div id="square_G8" class="darkBlueSquareBorderTop">
+        <div id="Display_G8" class="timeDisplay"></div>
+        <div id="Display_Cart_G8" class="cartDisplay"></div>
+        <div class="squareLabel">G8</div>
+    </div>
+    <div id="square_G9" class="darkBlueSquareBorderTop">
+        <div id="Display_G9" class="timeDisplay"></div>
+        <div id="Display_Cart_G9" class="cartDisplay"></div>
+        <div class="squareLabel">G9</div>
+    </div>
+    <div id="square_G10" class="darkBlueSquareBorderTop">
+        <div id="Display_G10" class="timeDisplay"></div>
+        <div id="Display_Cart_G10" class="cartDisplay"></div>
+        <div class="squareLabel">G10</div>
+    </div>
+    <div id="square_G11" class="darkBlueSquareBorderTop">
+        <div id="Display_G11" class="timeDisplay"></div>
+        <div id="Display_Cart_G11" class="cartDisplay"></div>
+        <div class="squareLabel">G11</div>
+    </div>
+    <div id="square_G12" class="darkBlueSquareBorderTop">
+        <div id="Display_G12" class="timeDisplay"></div>
+        <div id="Display_Cart_G12" class="cartDisplay"></div>
+        <div class="squareLabel">G12</div>
+    </div>
+    <div id="square_G13" class="darkBlueSquareBorderTop">
+        <div id="Display_G13" class="timeDisplay"></div>
+        <div id="Display_Cart_G13" class="cartDisplay"></div>
+        <div class="squareLabel">G13</div>
+    </div>
+    <div id="square_G14" class="darkBlueSquareBorderTopRight">
+        <div id="Display_G14" class="timeDisplay"></div>
+        <div id="Display_Cart_G14" class="cartDisplay"></div>
+        <div class="squareLabel">G14</div>
+    </div>
+
+</div>
+
+
+<div class="myContainer">
+    <div class="blankSquareBorderLeft"></div>
+    <div class="blankSquare"></div>
+    <div id="square_A" class="lightBlueSquare clickableSquare">
+        <div id="Display_A" class="timeDisplay"></div>
+        <div id="Display_Cart_A" class="cartDisplay"></div>
+        <div class="squareLabel">A</div>
+    </div>
+    <div id="square_B" class="lightBlueSquare clickableSquare">
+        <div id="Display_B" class="timeDisplay"></div>
+        <div id="Display_Cart_B" class="cartDisplay"></div>
+        <div class="squareLabel">B</div>
+    </div>
+    <div  id="square_C" class="lightBlueSquare clickableSquare">
+        <div id="Display_C" class="timeDisplay"></div>
+        <div id="Display_Cart_C" class="cartDisplay"></div>
+        <div class="squareLabel">C</div>
+    </div>
+    <div  id="square_D" class="lightBlueSquare clickableSquare">
+        <div id="Display_D" class="timeDisplay"></div>
+        <div id="Display_Cart_D" class="cartDisplay"></div>
+        <div class="squareLabel">D</div>
+    </div>
+    <div  id="square_E" class="lightBlueSquare clickableSquare">
+        <div  id="Display_E" class="timeDisplay"></div>
+        <div id="Display_Cart_E" class="cartDisplay"></div>
+        <div class="squareLabel">E</div>
+    </div>
+    <div id="square_F" class="lightBlueSquare clickableSquare">
+        <div id="Display_F" class="timeDisplay"></div>
+        <div id="Display_Cart_F" class="cartDisplay"></div>
+        <div class="squareLabel">F</div>
+    </div>
+    <div id="square_G" class="lightBlueSquare clickableSquare">
+        <div id="Display_G" class="timeDisplay"></div>
+        <div id="Display_Cart_G" class="cartDisplay"></div>
+        <div class="squareLabel">G</div>
+    </div>
+    <div id="square_H" class="lightBlueSquare clickableSquare">
+        <div id="Display_H" class="timeDisplay"></div>
+        <div id="Display_Cart_H" class="cartDisplay"></div>
+        <div class="squareLabel">H</div>
+    </div>
+    <div id="square_I" class="lightBlueSquare clickableSquare">
+        <div id="Display_I" class="timeDisplay"></div>
+        <div id="Display_Cart_I" class="cartDisplay"></div>
+        <div class="squareLabel">I</div>
+    </div>
+    <div id="square_J" class="lightBlueSquare clickableSquare">
+        <div id="Display_J" class="timeDisplay"></div>
+        <div id="Display_Cart_J" class="cartDisplay"></div>
+        <div class="squareLabel">J</div>
+    </div>
+    <div id="square_K" class="lightBlueSquare clickableSquare">
+        <div id="Display_K" class="timeDisplay"></div>
+        <div id="Display_Cart_K" class="cartDisplay"></div>
+        <div class="squareLabel">K</div>
+    </div>
+    <div id="square_L" class="lightBlueSquare clickableSquare">
+        <div id="Display_L" class="timeDisplay"></div>
+        <div id="Display_Cart_L" class="cartDisplay"></div>
+        <div class="squareLabel">L</div>
+    </div>
+    <div id="square_M" class="lightBlueSquare clickableSquare">
+        <div id="Display_M" class="timeDisplay"></div>
+        <div id="Display_Cart_M" class="cartDisplay"></div>
+        <div class="squareLabel">M</div>
+    </div>
+    <div id="square_N" class="lightBlueSquareBorderRight clickableSquare">
+        <div id="Display_N" class="timeDisplay"></div>
+        <div id="Display_Cart_N" class="cartDisplay"></div>
+        <div class="squareLabel">N</div>
+    </div>
+
+
+</div>
+
+<div class="myContainer">
+    <div class="blankSquareBorderLeft"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquareBorderRight"></div>
+
+
+</div>
+<div class="myContainer">
+    <div class="blankSquareBorderLeft"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquareBorderRight"></div>
+
+
+</div>
+
+<div class="myContainer">
+    <div class="blankSquareBorderLeft"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquareBorderRight">
+    </div>
+    <div id="square_Z"  class="lightBlueSquareBorderNoLeft clickableSquare">
+        <div id="Display_Z" class="timeDisplay"></div>
+        <div id="Display_Cart_Z" class="cartDisplay"></div>
+        <div class="squareLabel">Z</div>
+    </div>
+    <div id="square_Y" class="lightBlueSquare clickableSquare">
+        <div id="Display_Y" class="timeDisplay"></div>
+        <div id="Display_Cart_Y" class="cartDisplay"></div>
+        <div class="squareLabel">Y</div>
+    </div>
+    <div id="square_X" class="lightBlueSquare clickableSquare">
+        <div id="Display_X" class="timeDisplay"></div>
+        <div id="Display_Cart_X" class="cartDisplay"></div>
+        <div class="squareLabel">X</div>
+    </div>
+    <div id="square_W" class="lightBlueSquare clickableSquare">
+        <div id="Display_W" class="timeDisplay"></div>
+        <div id="Display_Cart_W" class="cartDisplay"></div>
+        <div class="squareLabel">W</div>
+    </div>
+    <div id="square_V" class="lightBlueSquare clickableSquare">
+        <div id="Display_V" class="timeDisplay"></div>
+        <div id="Display_Cart_V" class="cartDisplay"></div>
+        <div class="squareLabel">V</div>
+    </div>
+    <div id="square_U" class="lightBlueSquare clickableSquare">
+        <div id="Display_U" class="timeDisplay"></div>
+        <div id="Display_Cart_U" class="cartDisplay"></div>
+        <div class="squareLabel">U</div>
+    </div>
+    <div id="square_T" class="lightBlueSquare clickableSquare">
+        <div id="Display_T" class="timeDisplay"></div>
+        <div id="Display_Cart_T" class="cartDisplay"></div>
+        <div class="squareLabel">T</div>
+    </div>
+    <div id="square_S" class="lightBlueSquare clickableSquare">
+        <div id="Display_S" class="timeDisplay"></div>
+        <div id="Display_Cart_S" class="cartDisplay"></div>
+        <div class="squareLabel">S</div>
+    </div>
+    <div id="square_R" class="lightBlueSquare clickableSquare">
+        <div id="Display_R" class="timeDisplay"></div>
+        <div id="Display_Cart_R" class="cartDisplay"></div>
+        <div class="squareLabel">R</div>
+    </div>
+    <div id="square_Q" class="lightBlueSquare clickableSquare">
+        <div id="Display_Q" class="timeDisplay"></div>
+        <div id="Display_Cart_Q" class="cartDisplay"></div>
+        <div class="squareLabel">Q</div>
+    </div>
+    <div id="square_P" class="lightBlueSquare clickableSquare">
+        <div id="Display_P" class="timeDisplay"></div>
+        <div id="Display_Cart_P" class="cartDisplay"></div>
+        <div class="squareLabel">P</div>
+    </div>
+    <div id="square_O" class="lightBlueSquareBorderRight clickableSquare">
+        <div id="Display_O" class="timeDisplay"></div>
+        <div id="Display_Cart_O" class="cartDisplay"></div>
+        <div class="squareLabel">O</div>
+    </div>
+</div>
+
+
+<div class="myContainer">
+    <div class="blankSquareBorderBottomLeft"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquareBorderBottomRight">
+    </div>
+    <div id="square_F1" class="darkBlueSquareBorderBottomNoLeft">
+        <div id="Display_F1" class="timeDisplay"></div>
+        <div id="Display_Cart_F1" class="cartDisplay"></div>
+        <div class="squareLabel">F1</div>
+    </div>
+    <div id="square_F2" class="darkBlueSquareBorderBottom">
+        <div id="Display_F2" class="timeDisplay"></div>
+        <div id="Display_Cart_F2" class="cartDisplay"></div>
+        <div class="squareLabel">F2</div>
+    </div>
+    <div id="square_F3" class="darkBlueSquareBorderBottom">
+        <div id="Display_F3" class="timeDisplay"></div>
+        <div id="Display_Cart_F3" class="cartDisplay"></div>
+        <div class="squareLabel">F3</div>
+    </div>
+    <div id="square_F4" class="darkBlueSquareBorderBottom">
+        <div id="Display_F4" class="timeDisplay"></div>
+        <div id="Display_Cart_F4" class="cartDisplay"></div>
+        <div class="squareLabel">F4</div>
+    </div>
+    <div id="square_F5" class="darkBlueSquareBorderBottom">
+        <div id="Display_F5" class="timeDisplay"></div>
+        <div id="Display_Cart_F5" class="cartDisplay"></div>
+        <div class="squareLabel">F5</div>
+    </div>
+    <div id="square_F6" class="darkBlueSquareBorderBottom">
+        <div id="Display_F6" class="timeDisplay"></div>
+        <div id="Display_Cart_F6" class="cartDisplay"></div>
+        <div class="squareLabel">F6</div>
+    </div>
+    <div id="square_F7" class="darkBlueSquareBorderBottom">
+        <div id="Display_F7" class="timeDisplay"></div>
+        <div id="Display_Cart_F7" class="cartDisplay"></div>
+        <div class="squareLabel">F7</div>
+    </div>
+    <div id="square_F8" class="darkBlueSquareBorderBottom">
+        <div id="Display_F8" class="timeDisplay"></div>
+        <div id="Display_Cart_F8" class="cartDisplay"></div>
+        <div class="squareLabel">F8</div>
+    </div>
+    <div id="square_F9" class="darkBlueSquareBorderBottom">
+        <div id="Display_F9" class="timeDisplay"></div>
+        <div id="Display_Cart_F9" class="cartDisplay"></div>
+        <div class="squareLabel">F9</div>
+    </div>
+    <div id="square_F10" class="darkBlueSquareBorderBottom">
+        <div id="Display_F10" class="timeDisplay"></div>
+        <div id="Display_Cart_F10" class="cartDisplay"></div>
+        <div class="squareLabel">F10</div>
+    </div>
+    <div id="square_F11" class="darkBlueSquareBorderBottom">
+        <div id="Display_F11" class="timeDisplay"></div>
+        <div id="Display_Cart_F11" class="cartDisplay"></div>
+        <div class="squareLabel">F11</div>
+    </div>
+    <div id="square_F12" class="darkBlueSquareBorderBottomRight">
+        <div id="Display_F12" class="timeDisplay"></div>
+        <div id="Display_Cart_F12" class="cartDisplay"></div>
+        <div class="squareLabel">F12</div>
+    </div>
+
+</div>
+
+<div class="myContainer">
+    <div class="blankSquareBorderRight"></div>
+    <div style="text-align:right;font-weight:bold" class="blankSquare">Double&nbsp</div>
+    <div style="font-weight:bold" class="blankSquare">Doors</div>
+    <div class="blankSquareBorderLeft"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+    <div class="blankSquare"></div>
+
+
+</div>
+
+<div class="modal fade" id="editModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="fdModFrm" autocomplete="off">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="editModalHeader">Insert Cart</h3>
+                    @*<a href="#" class="close" data-dismiss="modal">&times;</a>*@
+                </div>
+                <div id="editModalBody" class="modal-body">
+                    @*<form id="fdModFrm" autocomplete="off">*@
+                    <div class="row">
+                        <div class="col-lg-3">
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group mb-2">
+                                @Html.Label("UserName:", htmlAttributes: new { @class = "control-label col-lg-2 lb-md" })
+                                @*@Html.TextBoxFor(m => m.UserName, htmlAttributes: new { @class = "form-control changeable  form-control-sm", @autocomplete = "off" })*@
+                                @Html.DropDownList("UserName", Model.UserNames,
+                                "Select", new { @class = "selectpicker form-control form-control-lg", @style = " font-size: 20px; height:50px" })
+                                @*@Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })*@
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3">
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group mb-2 ">
+                                @Html.Label("Password:", htmlAttributes: new { @class = "control-label col-lg-2 lb-md" })
+                                @Html.PasswordFor(m => m.Password, htmlAttributes: new { @class = "form-control changeable  form-control-sm", @autocomplete = "off", @style = "height:50px" })
+                                @*@Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })*@
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                        </div>
+                    </div>
+                    <div class="row" id="divCartLine">
+                        <div class="col-lg-3">
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group mb-2 editDivFormat">
+                                @Html.Label("Package Line:", htmlAttributes: new { @class = "control-label col-lg-2 lb-md" })
+                                @Html.DropDownList("LineNumberStart", Model.CartLines,
+                                "Select", new { @class = "selectpicker form-control form-control-lg", @style = "font-size: 20px;height:50px" })
+                                @*@Html.ValidationMessageFor(model => model.LineNumberStart, "", new { @class = "text-danger" })*@
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                        </div>
+                    </div>
+                    <div class="row" id="divCartNumber">
+                        <div class="col-lg-3">
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group mb-2 editDivFormat">
+                                @Html.Label("Cart Number:", htmlAttributes: new { @class = "control-label col-lg-2 lb-md" })
+                                @Html.DropDownList("CartNumberStart", Model.CartNumbers,
+                                "Select", new { @class = "selectpicker form-control form-control-lg", @style = " font-size: 20px;height:50px" })
+                                @*@Html.ValidationMessageFor(model => model.CartNumberStart, "", new { @class = "text-danger" })*@
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-3">
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group mb-2 editDivFormat">
+                                <label id="lblError" class="text-danger"></label>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                        </div>
+                    </div>
+
+                    @Html.Hidden("LocationCode")
+                    @Html.Hidden("LineNumberEnd")
+                    @Html.Hidden("CartNumberEnd")
+
+                    @*</form>*@
+                </div>
+
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-default" data-dismiss="modal" id="btnCancel">Cancel</a>
+                    <input type="reset" value="OK" class="btn btn-success" id="btnSubmitStart" />
+                    <input type="reset" value="Submit" class="btn btn-success" id="btnSubmitEnd" />
+                    @*<input type="reset" class="btn btn-default" data-dismiss="modal" id="btnCancel" value="Cancel"/>*@
+
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+
+<div class="modal fade" id="confirmModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h3 class="modal-title">Confirmation</h3>
+                @*<a href="#" class="close" data-dismiss="modal">&times;</a>*@
+            </div>
+            <div id="confirmModalBody" class="modal-body">
+
+                <div class="row">
+                    @*<div class="col-lg-2">
+                        </div>*@
+                    <div class="col-lg-12">
+                        <label style="font-size: 20px">You Selected The Following Values:</label>
+                    </div>
+                    @*<div class="col-lg-2">
+                        </div>*@
+
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-lg-3">
+                    </div>
+                    <div class="col-lg-6">
+                        <label id="lblLocation" style="font-size: 20px"></label>
+                    </div>
+                    <div class="col-lg-3">
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-lg-3">
+                    </div>
+                    <div class="col-lg-6">
+                        <label id="lblCartLine" style="font-size: 20px"></label>
+                    </div>
+                    <div class="col-lg-3">
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-lg-3">
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group mb-2 ">
+                            <label id="lblCartNumber" style="font-size: 20px"></label>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                    </div>
+                </div>
+
+
+                @Html.Hidden("ConfirmUserName")
+                @Html.Hidden("ConfirmPassword")
+
+                @Html.Hidden("ConfirmLocationCode")
+                @Html.Hidden("ConfirmLineNumber")
+                @Html.Hidden("ConfirmCartNumber")
+
+
+            </div>
+
+            <div class="modal-footer">
+                <a href="#" class="btn btn-default" data-dismiss="modal" id="btnConfirmCancel">Cancel</a>
+                <input type="reset" value="Submit" class="btn btn-success" id="btnConfirm" />
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+@*</body>
+    </html>*@
+
+

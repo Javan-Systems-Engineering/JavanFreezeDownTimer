@@ -1,0 +1,61 @@
+﻿@model Models.User
+@{
+    
+    
+    if (Model != null)
+  {     
+    <div id="expanderContent">
+        <table style='width: 100%'>
+            <tr>
+                <td style='width: 10%; font-weight: bold' class='userTable'>
+                    UserName:
+                </td>
+                <td style='width: 28%' class='userTable'>
+                    @Model.UserName
+                </td>
+                <td style='width: 8%; font-weight: bold' class='userTable'>
+                    First Name:
+                </td>
+                <td style='width: 20%' class='userTable'>
+                    @Model.FirstName
+                </td>                
+                <td style='font-weight: bold;width: 10%' class='userTable'>
+                    Password:
+                </td>
+                <td class='userTable'>
+                    @Model.Password
+                </td>
+            </tr>
+            <tr>
+                <td style='font-weight: bold' class='userTable'>
+                    Email:
+                </td>
+                <td class='userTable'>
+                    @Model.EMail
+                </td>
+                <td style='width: 10%; font-weight: bold' class='userTable'>
+                    Last Name:
+                </td>
+                <td style='width: 30%' class='userTable'>
+                    @Model.LastName
+                </td>
+                <td style='font-weight: bold' class='userTable'>
+                    Inactive:
+                </td>
+                <td class='userTable'>
+                    @Model.Inactive
+                </td>                
+            </tr>
+            @*<tr>                
+                <td style='font-weight: bold' class='userTable'>
+                    Title:
+                </td>
+                <td class='userTable'>
+                    @Model.Title
+                </td>                
+               <td></td>
+            </tr>*@
+        </table>
+    </div>
+  }
+}

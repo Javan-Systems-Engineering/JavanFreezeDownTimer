@@ -1,0 +1,64 @@
+﻿@model IEnumerable<Models.Permission>
+@{
+    ViewBag.Title = "Rights";
+     Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(":input[type='button']").button();
+    });
+</script>
+
+
+<fieldset>
+    <legend>
+        <h3>
+            Permissions
+        </h3>
+    </legend>
+    <table id="PermissionTable" style="width: 90%">
+        <thead>
+        <th>
+            Permission
+        </th>
+        <th>
+            Description
+        </th>
+        <th style="width: 8%">
+            Action
+        </th>
+        </thead>
+        @foreach (Models.Permission item in Model)
+        {
+            <tr>
+                <td>
+                    @*@Html.ActionLink(item.PermissionDescription, "PermissionDetails", new { id = item.PermissionID })*@
+                    @Html.ActionLink(item.PermissionName, "PermissionDetails", new { id = item.PermissionID })
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PermissionDescription)
+                </td>
+                <td>
+                    <center>
+                        <a href="@Url.Action("PermissionEdit", "Admin", new { id = item.PermissionID })">
+                            <img src="@Url.Content("~/Content/Images/pen.png")" alt="Edit Permission" />
+                        </a>
+
+                        <a href="@Url.Action("PermissionDelete", "Admin", new { id = item.PermissionID })">
+                            <img src="@Url.Content("~/Content/Images/bin.png")" alt="Delete Permission" />
+                        </a>
+                    </center>
+                </td>
+            </tr>
+        }
+    </table>
+    <br />
+    <div>
+        <input type="button" value="Create Permission" onclick="location.href='@Url.Action("PermissionCreate", "Admin")'" />
+        <input type="button" id="importPermissions2" name="importPermissions2" value="Import Permissions" onclick="location.href='@Url.Action("PermissionsImport", "Admin")'" />
+        <br />
+    </div>
+</fieldset>
+<br />
+@Html.ActionLink("Go to Roles", "RoleIndex", "Admin")
