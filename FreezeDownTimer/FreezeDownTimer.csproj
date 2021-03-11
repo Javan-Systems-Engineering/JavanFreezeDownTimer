@@ -498,7 +498,10 @@
     <Content Include="Content\DataTables\css\semanticui.scss" />
     <Content Include="Content\DataTables\css\mixins.scss" />
     <Content Include="Content\DataTables\css\common.scss" />
+    <None Include="Properties\PublishProfiles\FreezeDownTimer - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\FreezeDownTimer - ReadOnly - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\FreezeDownTimer - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\FreezeDownTimer - Web Deploy1.pubxml" />
     <None Include="Scripts\jquery-3.5.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.5.1.js" />
     <Content Include="Scripts\jquery-3.5.1.min.js" />

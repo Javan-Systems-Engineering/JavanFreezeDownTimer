@@ -219,9 +219,9 @@ namespace FreezeDownTimer.Controllers
                 docking.LocationID = LocationID;
                 docking.CartID = CartID;
                 docking.StartTime = DateTime.Now.ConvertToEST();
-                //docking.EndTime = docking.StartTime.GetValueOrDefault().AddHours(5);
+                docking.EndTime = docking.StartTime.GetValueOrDefault().AddHours(5);
                 //docking.EndTime = docking.StartTime.GetValueOrDefault().AddMinutes(1);
-                docking.EndTime = docking.StartTime.GetValueOrDefault().AddSeconds(120);
+                //docking.EndTime = docking.StartTime.GetValueOrDefault().AddSeconds(120);
                 docking.IsActive = true;
                 docking.InsertDate = DateTime.Now.ConvertToEST();
                 docking.InsertBy = UserID;
