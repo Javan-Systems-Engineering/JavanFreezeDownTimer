@@ -411,9 +411,12 @@ namespace FreezeDownTimer.Models
             {
 
                 var ar = from d in context.Dockings.AsNoTracking()
-                join l in context.Locations.AsNoTracking() on d.LocationID equals l.LocationID
-                join c in context.Carts.AsNoTracking() on d.CartID equals c.CartID
-                join u in context.Users.AsNoTracking() on d.LastUpdateBy equals u.UserID
+                join l in context.Locations.AsNoTracking() on d.LocationID equals l.LocationID into lt
+                from l in lt.DefaultIfEmpty()
+                join c in context.Carts.AsNoTracking() on d.CartID equals c.CartID into ct
+                from c in ct.DefaultIfEmpty()
+                join u in context.Users.AsNoTracking() on d.LastUpdateBy equals u.UserID into ut
+                from u in ut.DefaultIfEmpty()
                 select new AuditReportModel
                 {
                     UserName = u.UserName,
@@ -421,7 +424,9 @@ namespace FreezeDownTimer.Models
                     EndTime = d.EndTime ?? DateTime.MinValue,
                     LocationCode = l.LocationCode,
                     Cart = c.LineNumber + "-" + SqlFunctions.Replicate("0",  2 - c.CartNumber.ToString().Length) + c.CartNumber.ToString(),
-                    CartRemoved = d.LastUpdate ?? DateTime.MinValue
+                    //CartRemoved = d.LastUpdate ?? DateTime.MinValue
+                    CartRemoved = d.LastUpdate 
+
                 };
 
                 if (String.IsNullOrEmpty(StartTime) == false  && String.IsNullOrEmpty(EndTime) == false)

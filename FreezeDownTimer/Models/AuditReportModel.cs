@@ -17,7 +17,7 @@ namespace FreezeDownTimer.Models
 
         public string Cart { get; set; }
 
-        public DateTime CartRemoved { get; set; }
+        public DateTime? CartRemoved { get; set; }
 
 
     }
